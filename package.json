@@ -1,0 +1,12 @@
+{
+  "name": "auditos",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.ts",
+    "audit:sample": "node src/index.ts examples/sample-paper.txt"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

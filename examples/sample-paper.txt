@@ -1,0 +1,18 @@
+# Sample Research Paper
+
+## Abstract
+
+This paper argues that policy X reduced urban crime by 20 percent after implementation.
+
+## Empirical Strategy
+
+We compare treated cities with untreated cities from 2010 to 2020 using a difference-in-differences design.
+
+## Results
+
+The main table shows a statistically significant decline in crime in treated cities after policy adoption.
+
+## Conclusion
+
+Policy X caused a large and durable reduction in urban crime and should be adopted nationwide.
+
