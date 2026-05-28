@@ -14,6 +14,10 @@ export type ClaimType =
 
 export type RiskLevel = "low" | "medium" | "high";
 
+export type ClaimExtractionMode = "auto" | "heuristic" | "llm";
+
+export type ClaimExtractionMethod = "heuristic" | "llm";
+
 export type Section = {
   id: string;
   title: string;
@@ -74,6 +78,11 @@ export type AuditReport = {
   session: AuditSession;
   document: AuditDocument;
   summary: string;
+  metadata: {
+    claimExtractionMethod: ClaimExtractionMethod;
+    claimExtractionModel?: string;
+    claimExtractionFallbackReason?: string;
+  };
   claims: Claim[];
   findings: AuditFinding[];
   reviewerQuestions: string[];

@@ -23,6 +23,7 @@ Current status:
 - Text ingestion is working.
 - PDF ingestion is working through a local `pypdf` extractor.
 - The pipeline produces sections, claims, risk findings, reviewer questions, and a reproducibility checklist.
+- Claim extraction supports `auto`, `heuristic`, and `llm` modes.
 
 ## Phase 1: Claim Graph MVP
 

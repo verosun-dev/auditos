@@ -1,10 +1,22 @@
-import type { AuditDocument, AuditFinding, AuditReport, AuditSession, Claim } from "../types/audit.ts";
+import type {
+  AuditDocument,
+  AuditFinding,
+  AuditReport,
+  AuditSession,
+  Claim,
+  ClaimExtractionMethod,
+} from "../types/audit.ts";
 
 export function generateAuditReport(input: {
   session: AuditSession;
   document: AuditDocument;
   claims: Claim[];
   findings: AuditFinding[];
+  claimExtraction: {
+    method: ClaimExtractionMethod;
+    model?: string;
+    fallbackReason?: string;
+  };
 }): AuditReport {
   const reviewerQuestions = [...new Set(input.findings.map((finding) => finding.reviewerQuestion))];
 
@@ -21,6 +33,11 @@ export function generateAuditReport(input: {
     },
     document: input.document,
     summary: summarizeDocument(input.document),
+    metadata: {
+      claimExtractionMethod: input.claimExtraction.method,
+      claimExtractionModel: input.claimExtraction.model,
+      claimExtractionFallbackReason: input.claimExtraction.fallbackReason,
+    },
     claims: input.claims,
     findings: input.findings,
     reviewerQuestions,

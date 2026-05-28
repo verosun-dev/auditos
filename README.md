@@ -62,6 +62,26 @@ Run a PDF audit and write a local report:
 node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json
 ```
 
+Run with explicit heuristic extraction:
+
+```bash
+node src/index.ts /path/to/paper.pdf --extractor heuristic --out reports/paper-audit-report.json
+```
+
+Run with LLM-backed claim extraction:
+
+```bash
+OPENAI_API_KEY=... node src/index.ts /path/to/paper.pdf --extractor llm --model gpt-5.5 --out reports/paper-audit-report.json
+```
+
+The default extractor mode is `auto`: it uses LLM-backed extraction when `OPENAI_API_KEY` is set, and falls back to local heuristic extraction otherwise. Use `OPENAI_MODEL` or `--model` to select a different model.
+
+Limit the number of PDF sections sent to the LLM:
+
+```bash
+node src/index.ts /path/to/paper.pdf --extractor llm --max-sections 12
+```
+
 PDF extraction currently uses Python with `pypdf`. Set `AUDITOS_PYTHON` if your preferred Python environment is not on the default path:
 
 ```bash
