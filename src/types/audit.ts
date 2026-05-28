@@ -9,7 +9,8 @@ export type ClaimType =
   | "comparative"
   | "methodological"
   | "theoretical"
-  | "forecast";
+  | "forecast"
+  | "normative";
 
 export type RiskLevel = "low" | "medium" | "high";
 
@@ -78,4 +79,3 @@ export type AuditReport = {
   reviewerQuestions: string[];
   reproducibilityChecklist: string[];
 };
-

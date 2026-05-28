@@ -51,6 +51,22 @@ export function auditClaims(claims: Claim[]): AuditFinding[] {
       ];
     }
 
+    if (claim.type === "normative") {
+      return [
+        {
+          id: randomUUID(),
+          claimId: claim.id,
+          riskType: "design-assumption",
+          riskLevel: "medium",
+          explanation:
+            "The claim states what the system should or must do. The audit should trace this to user needs, safety constraints, or domain requirements.",
+          reviewerQuestion:
+            "What user, safety, regulatory, or workflow evidence makes this design requirement necessary?",
+          suggestedTest: "Add a product requirement note linking this claim to a user workflow or governance constraint.",
+        },
+      ];
+    }
+
     return [];
   });
 }

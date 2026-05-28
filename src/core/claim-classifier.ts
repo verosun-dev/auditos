@@ -32,5 +32,9 @@ function inferClaimType(text: string): ClaimType {
     return "forecast";
   }
 
+  if (/\b(should|must|requires?|cannot|not a substitute|not be marketed)\b/i.test(text)) {
+    return "normative";
+  }
+
   return "descriptive";
 }

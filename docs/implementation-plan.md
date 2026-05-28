@@ -18,6 +18,12 @@ Outputs:
 - Reproducibility checklist.
 - Exportable audit report.
 
+Current status:
+
+- Text ingestion is working.
+- PDF ingestion is working through a local `pypdf` extractor.
+- The pipeline produces sections, claims, risk findings, reviewer questions, and a reproducibility checklist.
+
 ## Phase 1: Claim Graph MVP
 
 - Add claim-evidence-assumption graph.
@@ -39,4 +45,3 @@ Outputs:
 - Produce replication notebook skeletons.
 - Extract causal graph candidates.
 - Add sensitivity analysis templates.
-

@@ -10,6 +10,7 @@ export const researchReviewerAdapter = {
     "methodological",
     "theoretical",
     "forecast",
+    "normative",
   ],
   riskCategories: [
     "unsupported-claim",
@@ -19,6 +20,7 @@ export const researchReviewerAdapter = {
     "citation-overreach",
     "missing-robustness-check",
     "external-validity",
+    "design-assumption",
   ],
   outputStyle: "reviewer-facing",
 };
