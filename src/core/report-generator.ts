@@ -6,6 +6,7 @@ import type {
   Claim,
   ClaimExtractionMethod,
 } from "../types/audit.ts";
+import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
 
 export function generateAuditReport(input: {
   session: AuditSession;
@@ -19,6 +20,17 @@ export function generateAuditReport(input: {
   };
 }): AuditReport {
   const reviewerQuestions = [...new Set(input.findings.map((finding) => finding.reviewerQuestion))];
+  const graph = buildClaimGraph({
+    document: input.document,
+    claims: input.claims,
+    findings: input.findings,
+    reviewerQuestions,
+  });
+  const mindmap = buildClaimMindmap({
+    document: input.document,
+    claims: input.claims,
+    findings: input.findings,
+  });
 
   return {
     session: {
@@ -40,6 +52,9 @@ export function generateAuditReport(input: {
     },
     claims: input.claims,
     findings: input.findings,
+    graph,
+    mindmap,
+    mindmapMermaid: renderMindmapMermaid(mindmap),
     reviewerQuestions,
     reproducibilityChecklist: [
       "Are all datasets named and accessible?",

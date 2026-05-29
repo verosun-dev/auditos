@@ -30,9 +30,12 @@ src/
     research-reviewer.ts
   core/
     audit-engine.ts
+    claim-graph.ts
     claim-classifier.ts
     claim-extractor.ts
+    document-ingestion.ts
     initialize-audit.ts
+    pdf-ingestion.ts
     pipeline.ts
     report-generator.ts
     section-parser.ts
@@ -61,6 +64,14 @@ Run a PDF audit and write a local report:
 ```bash
 node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json
 ```
+
+Run a PDF audit and write a Mermaid mindmap:
+
+```bash
+node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out-mindmap reports/paper-mindmap.mmd
+```
+
+The report includes a machine-readable `graph` and a claim-centric `mindmap`. The mindmap is a first-pass view: it selects the highest-risk or most structurally important claims as primary branches, then attaches section context, risk findings, and reviewer questions below each claim.
 
 Run with explicit heuristic extraction:
 

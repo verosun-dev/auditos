@@ -24,6 +24,33 @@ Current status:
 - PDF ingestion is working through a local `pypdf` extractor.
 - The pipeline produces sections, claims, risk findings, reviewer questions, and a reproducibility checklist.
 - Claim extraction supports `auto`, `heuristic`, and `llm` modes.
+- Claim graph and claim-centric mindmap outputs are working.
+
+## Phase 1: Claim Graph MVP
+
+Goal: represent the document as a navigable graph rather than only a flat report.
+
+Initial graph objects:
+
+- Document node.
+- Section nodes.
+- Claim nodes.
+- Finding nodes.
+- Reviewer question nodes.
+
+Initial graph edges:
+
+- Document contains section.
+- Section states claim.
+- Claim triggers finding.
+- Finding asks reviewer question.
+
+Mindmap note:
+
+- Some documents should also receive a claim-centric mindmap.
+- The first version selects the most important claims as primary branches.
+- Supporting section context, risk findings, suggested tests, and reviewer questions become child branches.
+- Not every document should use the same graph layout; graph rendering should remain layout-adaptive.
 
 ## Phase 1: Claim Graph MVP
 

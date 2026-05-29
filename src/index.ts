@@ -5,13 +5,14 @@ import { runInitialAudit } from "./core/pipeline.ts";
 const args = process.argv.slice(2);
 const inputPath = args[0];
 const outputPath = readOption(args, "--out");
+const mindmapOutputPath = readOption(args, "--out-mindmap");
 const claimExtractionMode = readOption(args, "--extractor");
 const claimExtractionModel = readOption(args, "--model");
 const claimExtractionMaxSections = readNumberOption(args, "--max-sections");
 
 if (!inputPath) {
   console.error(
-    "Usage: node src/index.ts <document-path> [--out report.json] [--extractor auto|heuristic|llm] [--model model-name] [--max-sections n]",
+    "Usage: node src/index.ts <document-path> [--out report.json] [--out-mindmap mindmap.mmd] [--extractor auto|heuristic|llm] [--model model-name] [--max-sections n]",
   );
   process.exit(1);
 }
@@ -34,6 +35,13 @@ try {
     console.error(`Wrote audit report to ${resolvedOutputPath}`);
   } else {
     console.log(serializedReport);
+  }
+
+  if (mindmapOutputPath) {
+    const resolvedMindmapOutputPath = resolve(mindmapOutputPath);
+    await mkdir(dirname(resolvedMindmapOutputPath), { recursive: true });
+    await writeFile(resolvedMindmapOutputPath, report.mindmapMermaid, "utf8");
+    console.error(`Wrote mindmap to ${resolvedMindmapOutputPath}`);
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));

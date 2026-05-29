@@ -18,6 +18,46 @@ export type ClaimExtractionMode = "auto" | "heuristic" | "llm";
 
 export type ClaimExtractionMethod = "heuristic" | "llm";
 
+export type AuditGraphNodeType = "document" | "section" | "claim" | "finding" | "question";
+
+export type AuditGraphEdgeType = "contains" | "states" | "flags" | "asks";
+
+export type AuditGraphNode = {
+  id: string;
+  type: AuditGraphNodeType;
+  label: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type AuditGraphEdge = {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  type: AuditGraphEdgeType;
+  label?: string;
+};
+
+export type AuditGraph = {
+  nodes: AuditGraphNode[];
+  edges: AuditGraphEdge[];
+};
+
+export type MindmapNodeType = "document" | "claim" | "section" | "finding" | "question";
+
+export type MindmapNode = {
+  id: string;
+  type: MindmapNodeType;
+  label: string;
+  children: MindmapNode[];
+  metadata?: Record<string, unknown>;
+};
+
+export type MindmapView = {
+  root: MindmapNode;
+  strategy: "claim-centric";
+  maxClaims: number;
+};
+
 export type Section = {
   id: string;
   title: string;
@@ -85,6 +125,9 @@ export type AuditReport = {
   };
   claims: Claim[];
   findings: AuditFinding[];
+  graph: AuditGraph;
+  mindmap: MindmapView;
+  mindmapMermaid: string;
   reviewerQuestions: string[];
   reproducibilityChecklist: string[];
 };
