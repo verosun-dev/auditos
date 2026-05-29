@@ -18,6 +18,29 @@ export type ClaimExtractionMode = "auto" | "heuristic" | "llm";
 
 export type ClaimExtractionMethod = "heuristic" | "llm";
 
+export type VisualizationMode =
+  | "mindmap"
+  | "claim-tree"
+  | "claim-evidence-graph"
+  | "causal-mechanism-map"
+  | "theorem-dependency-graph"
+  | "workflow-pipeline";
+
+export type VisualizationRecommendation = {
+  primaryMode: VisualizationMode;
+  secondaryModes: VisualizationMode[];
+  rationale: string[];
+  confidence: "low" | "medium" | "high";
+  signals: {
+    hasTheorems: boolean;
+    hasEmpiricalDesign: boolean;
+    hasCausalLanguage: boolean;
+    hasMachineLearningWorkflow: boolean;
+    hasSystemPipeline: boolean;
+    hasConceptualStructure: boolean;
+  };
+};
+
 export type AuditGraphNodeType = "document" | "section" | "claim" | "finding" | "question";
 
 export type AuditGraphEdgeType = "contains" | "states" | "flags" | "asks";
@@ -122,6 +145,7 @@ export type AuditReport = {
     claimExtractionMethod: ClaimExtractionMethod;
     claimExtractionModel?: string;
     claimExtractionFallbackReason?: string;
+    visualization: VisualizationRecommendation;
   };
   claims: Claim[];
   findings: AuditFinding[];

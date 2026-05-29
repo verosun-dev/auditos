@@ -39,6 +39,7 @@ src/
     pipeline.ts
     report-generator.ts
     section-parser.ts
+    visualization-adapter.ts
   types/
     audit.ts
 ```
@@ -72,6 +73,14 @@ node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out
 ```
 
 The report includes a machine-readable `graph` and a claim-centric `mindmap`. The mindmap is a first-pass view: it selects the highest-risk or most structurally important claims as primary branches, then attaches section context, risk findings, and reviewer questions below each claim.
+
+AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
+
+- `mindmap` / `claim-tree` for conceptual, review, or theory papers.
+- `claim-evidence-graph` for empirical papers.
+- `causal-mechanism-map` for policy, social science, or causal inference papers.
+- `theorem-dependency-graph` for mathematics and theoretical computer science.
+- `workflow-pipeline` for ML, algorithm, or system papers.
 
 Run with explicit heuristic extraction:
 

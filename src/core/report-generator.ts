@@ -7,6 +7,7 @@ import type {
   ClaimExtractionMethod,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
+import { recommendVisualization } from "./visualization-adapter.ts";
 
 export function generateAuditReport(input: {
   session: AuditSession;
@@ -31,6 +32,10 @@ export function generateAuditReport(input: {
     claims: input.claims,
     findings: input.findings,
   });
+  const visualization = recommendVisualization({
+    document: input.document,
+    claims: input.claims,
+  });
 
   return {
     session: {
@@ -49,6 +54,7 @@ export function generateAuditReport(input: {
       claimExtractionMethod: input.claimExtraction.method,
       claimExtractionModel: input.claimExtraction.model,
       claimExtractionFallbackReason: input.claimExtraction.fallbackReason,
+      visualization,
     },
     claims: input.claims,
     findings: input.findings,

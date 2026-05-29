@@ -26,7 +26,7 @@ Current status:
 - Claim extraction supports `auto`, `heuristic`, and `llm` modes.
 - Claim graph and claim-centric mindmap outputs are working.
 
-## Phase 1: Claim Graph MVP
+## Phase 1: Adaptive Visualization Graph MVP
 
 Goal: represent the document as a navigable graph rather than only a flat report.
 
@@ -52,13 +52,29 @@ Mindmap note:
 - Supporting section context, risk findings, suggested tests, and reviewer questions become child branches.
 - Not every document should use the same graph layout; graph rendering should remain layout-adaptive.
 
-## Phase 1: Claim Graph MVP
+Adaptive visualization modes:
+
+| Document type | Visualization mode | Primary use |
+| --- | --- | --- |
+| Review, conceptual, theoretical, or clearly structured essay | `mindmap` / `claim-tree` | Show main claims as branches with supporting details below them. |
+| Empirical paper | `claim-evidence-graph` | Show how claims are supported by methods, tables, figures, data, and citations. |
+| Policy, social science, or causal inference paper | `causal-mechanism-map` | Show treatment, mechanism, outcome, confounders, assumptions, and external-validity boundaries. |
+| Mathematics or theoretical computer science paper | `theorem-dependency-graph` | Show definitions, lemmas, propositions, theorems, assumptions, and proof dependencies. |
+| ML, algorithm, or system paper | `workflow-pipeline` | Show data, preprocessing, model, training, evaluation, baselines, ablations, and deployment path. |
+
+Current implementation:
+
+- `visualization-adapter.ts` recommends a primary visualization mode.
+- Reports include the recommendation in `metadata.visualization`.
+- Current rendered output still focuses on graph JSON and a Mermaid mindmap.
+
+Remaining Phase 1 work:
 
 - Add claim-evidence-assumption graph.
 - Link claims to source locations.
-- Add claim type classification.
 - Add citation-support warnings.
 - Add risk heatmap.
+- Add renderer variants for `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline`.
 
 ## Phase 2: Reviewer Copilot
 
