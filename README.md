@@ -18,7 +18,7 @@ The first milestone is **AuditOS Research Reviewer**: a local MVP that accepts a
 
 - Full external evidence retrieval.
 - Legal, clinical, finance, and policy modules.
-- Full claim graph visualization.
+- Full interactive graph UI.
 - Simulation dashboards.
 - Formal proof verification.
 
@@ -44,6 +44,7 @@ src/
     risk-heatmap.ts
     section-parser.ts
     visualization-adapter.ts
+    visualization-renderer.ts
   types/
     audit.ts
 ```
@@ -76,6 +77,12 @@ Run a PDF audit and write a Mermaid mindmap:
 node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out-mindmap reports/paper-mindmap.mmd
 ```
 
+Run a PDF audit and write the recommended adaptive visualization:
+
+```bash
+node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out-visualization reports/paper-visualization.mmd
+```
+
 The report includes a machine-readable `graph` and a claim-centric `mindmap`. The mindmap is a first-pass view: it selects the highest-risk or most structurally important claims as primary branches, then attaches section context, risk findings, and reviewer questions below each claim.
 
 The graph now includes candidate evidence and assumptions:
@@ -100,6 +107,8 @@ AuditOS also recommends an adaptive visualization mode in `metadata.visualizatio
 - `causal-mechanism-map` for policy, social science, or causal inference papers.
 - `theorem-dependency-graph` for mathematics and theoretical computer science.
 - `workflow-pipeline` for ML, algorithm, or system papers.
+
+Reports include `visualizationDiagrams`, a Mermaid diagram bundle for all supported modes, plus `primaryVisualizationMermaid`, which matches the recommended primary mode.
 
 Run with explicit heuristic extraction:
 

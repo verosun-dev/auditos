@@ -41,6 +41,14 @@ export type VisualizationRecommendation = {
   };
 };
 
+export type VisualizationDiagram = {
+  mode: VisualizationMode;
+  format: "mermaid";
+  title: string;
+  description: string;
+  mermaid: string;
+};
+
 export type EvidenceKind =
   | "citation"
   | "table"
@@ -286,6 +294,8 @@ export type AuditReport = {
   graph: AuditGraph;
   mindmap: MindmapView;
   mindmapMermaid: string;
+  visualizationDiagrams: VisualizationDiagram[];
+  primaryVisualizationMermaid: string;
   reviewerQuestions: string[];
   reproducibilityChecklist: string[];
 };

@@ -12,6 +12,7 @@ import type {
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
 import { buildRiskHeatmap } from "./risk-heatmap.ts";
 import { recommendVisualization } from "./visualization-adapter.ts";
+import { renderVisualizationDiagrams } from "./visualization-renderer.ts";
 
 export function generateAuditReport(input: {
   session: AuditSession;
@@ -47,6 +48,18 @@ export function generateAuditReport(input: {
     document: input.document,
     claims: input.claims,
   });
+  const mindmapMermaid = renderMindmapMermaid(mindmap);
+  const visualizationDiagrams = renderVisualizationDiagrams({
+    document: input.document,
+    claims: input.claims,
+    evidenceCandidates: input.evidenceCandidates,
+    citationSupportWarnings: input.citationSupportWarnings,
+    assumptions: input.assumptions,
+    findings: input.findings,
+    mindmap,
+  });
+  const primaryVisualizationMermaid =
+    visualizationDiagrams.find((diagram) => diagram.mode === visualization.primaryMode)?.mermaid ?? mindmapMermaid;
   const riskHeatmap = buildRiskHeatmap({
     document: input.document,
     claims: input.claims,
@@ -84,7 +97,9 @@ export function generateAuditReport(input: {
     riskHeatmap,
     graph,
     mindmap,
-    mindmapMermaid: renderMindmapMermaid(mindmap),
+    mindmapMermaid,
+    visualizationDiagrams,
+    primaryVisualizationMermaid,
     reviewerQuestions,
     reproducibilityChecklist: [
       "Are all datasets named and accessible?",

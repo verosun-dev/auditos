@@ -6,13 +6,14 @@ const args = process.argv.slice(2);
 const inputPath = args[0];
 const outputPath = readOption(args, "--out");
 const mindmapOutputPath = readOption(args, "--out-mindmap");
+const visualizationOutputPath = readOption(args, "--out-visualization");
 const claimExtractionMode = readOption(args, "--extractor");
 const claimExtractionModel = readOption(args, "--model");
 const claimExtractionMaxSections = readNumberOption(args, "--max-sections");
 
 if (!inputPath) {
   console.error(
-    "Usage: node src/index.ts <document-path> [--out report.json] [--out-mindmap mindmap.mmd] [--extractor auto|heuristic|llm] [--model model-name] [--max-sections n]",
+    "Usage: node src/index.ts <document-path> [--out report.json] [--out-mindmap mindmap.mmd] [--out-visualization visualization.mmd] [--extractor auto|heuristic|llm] [--model model-name] [--max-sections n]",
   );
   process.exit(1);
 }
@@ -42,6 +43,13 @@ try {
     await mkdir(dirname(resolvedMindmapOutputPath), { recursive: true });
     await writeFile(resolvedMindmapOutputPath, report.mindmapMermaid, "utf8");
     console.error(`Wrote mindmap to ${resolvedMindmapOutputPath}`);
+  }
+
+  if (visualizationOutputPath) {
+    const resolvedVisualizationOutputPath = resolve(visualizationOutputPath);
+    await mkdir(dirname(resolvedVisualizationOutputPath), { recursive: true });
+    await writeFile(resolvedVisualizationOutputPath, report.primaryVisualizationMermaid, "utf8");
+    console.error(`Wrote primary visualization to ${resolvedVisualizationOutputPath}`);
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));

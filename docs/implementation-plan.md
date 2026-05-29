@@ -70,7 +70,8 @@ Current implementation:
 
 - `visualization-adapter.ts` recommends a primary visualization mode.
 - Reports include the recommendation in `metadata.visualization`.
-- Current rendered output still focuses on graph JSON and a Mermaid mindmap.
+- `visualization-renderer.ts` renders Mermaid variants for each adaptive visualization mode.
+- Reports include `visualizationDiagrams` for mode switching and `primaryVisualizationMermaid` for the recommended view.
 - `evidence-extractor.ts` generates local evidence candidates from source sections.
 - `assumption-extractor.ts` generates candidate assumptions from claim type.
 - Reports include `evidenceCandidates` and `assumptions`.
@@ -80,7 +81,7 @@ Current implementation:
 
 Remaining Phase 1 work:
 
-- Add renderer variants for `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline`.
+- Phase 1 MVP is complete. Next work begins in Phase 2: Reviewer Copilot.
 
 ## Phase 2: Reviewer Copilot
 
