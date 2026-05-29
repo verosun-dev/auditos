@@ -3,8 +3,10 @@ import type {
   AuditFinding,
   AuditReport,
   AuditSession,
+  Assumption,
   Claim,
   ClaimExtractionMethod,
+  EvidenceCandidate,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
 import { recommendVisualization } from "./visualization-adapter.ts";
@@ -13,6 +15,8 @@ export function generateAuditReport(input: {
   session: AuditSession;
   document: AuditDocument;
   claims: Claim[];
+  evidenceCandidates: EvidenceCandidate[];
+  assumptions: Assumption[];
   findings: AuditFinding[];
   claimExtraction: {
     method: ClaimExtractionMethod;
@@ -26,10 +30,14 @@ export function generateAuditReport(input: {
     claims: input.claims,
     findings: input.findings,
     reviewerQuestions,
+    evidenceCandidates: input.evidenceCandidates,
+    assumptions: input.assumptions,
   });
   const mindmap = buildClaimMindmap({
     document: input.document,
     claims: input.claims,
+    evidenceCandidates: input.evidenceCandidates,
+    assumptions: input.assumptions,
     findings: input.findings,
   });
   const visualization = recommendVisualization({
@@ -44,6 +52,8 @@ export function generateAuditReport(input: {
       artifacts: {
         sections: input.document.sections,
         claims: input.claims,
+        evidenceCandidates: input.evidenceCandidates,
+        assumptions: input.assumptions,
         findings: input.findings,
         reviewerQuestions,
       },
@@ -57,6 +67,8 @@ export function generateAuditReport(input: {
       visualization,
     },
     claims: input.claims,
+    evidenceCandidates: input.evidenceCandidates,
+    assumptions: input.assumptions,
     findings: input.findings,
     graph,
     mindmap,

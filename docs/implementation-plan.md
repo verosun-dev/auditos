@@ -35,6 +35,8 @@ Initial graph objects:
 - Document node.
 - Section nodes.
 - Claim nodes.
+- Evidence candidate nodes.
+- Assumption nodes.
 - Finding nodes.
 - Reviewer question nodes.
 
@@ -42,6 +44,8 @@ Initial graph edges:
 
 - Document contains section.
 - Section states claim.
+- Claim is supported by candidate evidence.
+- Claim depends on candidate assumptions.
 - Claim triggers finding.
 - Finding asks reviewer question.
 
@@ -67,10 +71,12 @@ Current implementation:
 - `visualization-adapter.ts` recommends a primary visualization mode.
 - Reports include the recommendation in `metadata.visualization`.
 - Current rendered output still focuses on graph JSON and a Mermaid mindmap.
+- `evidence-extractor.ts` generates local evidence candidates from source sections.
+- `assumption-extractor.ts` generates candidate assumptions from claim type.
+- Reports include `evidenceCandidates` and `assumptions`.
 
 Remaining Phase 1 work:
 
-- Add claim-evidence-assumption graph.
 - Link claims to source locations.
 - Add citation-support warnings.
 - Add risk heatmap.

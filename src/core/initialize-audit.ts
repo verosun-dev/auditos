@@ -14,6 +14,8 @@ export function initializeAuditSession(input: {
     artifacts: {
       sections: [],
       claims: [],
+      evidenceCandidates: [],
+      assumptions: [],
       findings: [],
       reviewerQuestions: [],
     },

@@ -30,10 +30,12 @@ src/
     research-reviewer.ts
   core/
     audit-engine.ts
+    assumption-extractor.ts
     claim-graph.ts
     claim-classifier.ts
     claim-extractor.ts
     document-ingestion.ts
+    evidence-extractor.ts
     initialize-audit.ts
     pdf-ingestion.ts
     pipeline.ts
@@ -73,6 +75,15 @@ node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out
 ```
 
 The report includes a machine-readable `graph` and a claim-centric `mindmap`. The mindmap is a first-pass view: it selects the highest-risk or most structurally important claims as primary branches, then attaches section context, risk findings, and reviewer questions below each claim.
+
+The graph now includes candidate evidence and assumptions:
+
+```txt
+Document -> Section -> Claim
+Claim -> Evidence
+Claim -> Assumption
+Claim -> Finding -> Reviewer Question
+```
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 

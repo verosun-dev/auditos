@@ -4,7 +4,9 @@ import type {
   AuditGraph,
   AuditGraphEdge,
   AuditGraphNode,
+  Assumption,
   Claim,
+  EvidenceCandidate,
   MindmapNode,
   MindmapView,
   Section,
@@ -15,6 +17,8 @@ const DEFAULT_MINDMAP_MAX_CLAIMS = 8;
 export function buildClaimGraph(input: {
   document: AuditDocument;
   claims: Claim[];
+  evidenceCandidates: EvidenceCandidate[];
+  assumptions: Assumption[];
   findings: AuditFinding[];
   reviewerQuestions: string[];
 }): AuditGraph {
@@ -27,6 +31,8 @@ export function buildClaimGraph(input: {
         sourcePath: input.document.sourcePath,
         sectionCount: input.document.sections.length,
         claimCount: input.claims.length,
+        evidenceCandidateCount: input.evidenceCandidates.length,
+        assumptionCount: input.assumptions.length,
         findingCount: input.findings.length,
       },
     },
@@ -56,6 +62,38 @@ export function buildClaimGraph(input: {
       },
     });
     edges.push(edge(claim.sectionId, claim.id, "states"));
+  }
+
+  for (const evidence of input.evidenceCandidates) {
+    nodes.push({
+      id: evidence.id,
+      type: "evidence",
+      label: evidence.kind,
+      metadata: {
+        claimId: evidence.claimId,
+        sectionId: evidence.sectionId,
+        kind: evidence.kind,
+        strength: evidence.strength,
+        text: evidence.text,
+        sourceHint: evidence.sourceHint,
+      },
+    });
+    edges.push(edge(evidence.claimId, evidence.id, "supported_by"));
+  }
+
+  for (const assumption of input.assumptions) {
+    nodes.push({
+      id: assumption.id,
+      type: "assumption",
+      label: assumption.kind,
+      metadata: {
+        claimId: assumption.claimId,
+        kind: assumption.kind,
+        status: assumption.status,
+        text: assumption.text,
+      },
+    });
+    edges.push(edge(assumption.claimId, assumption.id, "depends_on"));
   }
 
   for (const finding of input.findings) {
@@ -96,11 +134,15 @@ export function buildClaimGraph(input: {
 export function buildClaimMindmap(input: {
   document: AuditDocument;
   claims: Claim[];
+  evidenceCandidates: EvidenceCandidate[];
+  assumptions: Assumption[];
   findings: AuditFinding[];
   maxClaims?: number;
 }): MindmapView {
   const maxClaims = input.maxClaims ?? readNumberEnv("AUDITOS_MINDMAP_MAX_CLAIMS") ?? DEFAULT_MINDMAP_MAX_CLAIMS;
   const sectionsById = new Map(input.document.sections.map((section) => [section.id, section]));
+  const evidenceByClaimId = groupEvidenceByClaimId(input.evidenceCandidates);
+  const assumptionsByClaimId = groupAssumptionsByClaimId(input.assumptions);
   const findingsByClaimId = groupFindingsByClaimId(input.findings);
   const selectedClaims = selectMindmapClaims(input.claims, input.findings, sectionsById, maxClaims);
 
@@ -120,6 +162,8 @@ export function buildClaimMindmap(input: {
         claimToMindmapNode({
           claim,
           section: sectionsById.get(claim.sectionId),
+          evidenceCandidates: evidenceByClaimId.get(claim.id) ?? [],
+          assumptions: assumptionsByClaimId.get(claim.id) ?? [],
           findings: findingsByClaimId.get(claim.id) ?? [],
         }),
       ),
@@ -136,6 +180,8 @@ export function renderMindmapMermaid(mindmap: MindmapView): string {
 function claimToMindmapNode(input: {
   claim: Claim;
   section?: Section;
+  evidenceCandidates: EvidenceCandidate[];
+  assumptions: Assumption[];
   findings: AuditFinding[];
 }): MindmapNode {
   const children: MindmapNode[] = [];
@@ -149,6 +195,32 @@ function claimToMindmapNode(input: {
       metadata: {
         sectionId: input.section.id,
         pageRange: input.section.pageRange,
+      },
+    });
+  }
+
+  for (const evidence of input.evidenceCandidates.slice(0, 2)) {
+    children.push({
+      id: evidence.id,
+      type: "evidence",
+      label: `Evidence: ${evidence.kind} (${evidence.strength})`,
+      children: [],
+      metadata: {
+        text: evidence.text,
+        sourceHint: evidence.sourceHint,
+      },
+    });
+  }
+
+  for (const assumptionItem of input.assumptions.slice(0, 2)) {
+    children.push({
+      id: assumptionItem.id,
+      type: "assumption",
+      label: `Assumption: ${assumptionItem.kind}`,
+      children: [],
+      metadata: {
+        text: assumptionItem.text,
+        status: assumptionItem.status,
       },
     });
   }
@@ -180,6 +252,8 @@ function claimToMindmapNode(input: {
     children,
     metadata: {
       claimType: input.claim.type,
+      evidenceCandidateCount: input.evidenceCandidates.length,
+      assumptionCount: input.assumptions.length,
       findingCount: input.findings.length,
     },
   };
@@ -231,6 +305,30 @@ function groupFindingsByClaimId(findings: AuditFinding[]): Map<string, AuditFind
     const existing = grouped.get(finding.claimId) ?? [];
     existing.push(finding);
     grouped.set(finding.claimId, existing);
+  }
+
+  return grouped;
+}
+
+function groupEvidenceByClaimId(evidenceCandidates: EvidenceCandidate[]): Map<string, EvidenceCandidate[]> {
+  const grouped = new Map<string, EvidenceCandidate[]>();
+
+  for (const evidence of evidenceCandidates) {
+    const existing = grouped.get(evidence.claimId) ?? [];
+    existing.push(evidence);
+    grouped.set(evidence.claimId, existing);
+  }
+
+  return grouped;
+}
+
+function groupAssumptionsByClaimId(assumptions: Assumption[]): Map<string, Assumption[]> {
+  const grouped = new Map<string, Assumption[]>();
+
+  for (const assumptionItem of assumptions) {
+    const existing = grouped.get(assumptionItem.claimId) ?? [];
+    existing.push(assumptionItem);
+    grouped.set(assumptionItem.claimId, existing);
   }
 
   return grouped;

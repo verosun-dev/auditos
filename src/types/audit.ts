@@ -41,9 +41,55 @@ export type VisualizationRecommendation = {
   };
 };
 
-export type AuditGraphNodeType = "document" | "section" | "claim" | "finding" | "question";
+export type EvidenceKind =
+  | "citation"
+  | "table"
+  | "figure"
+  | "dataset"
+  | "method"
+  | "quote"
+  | "section-context"
+  | "calculation";
 
-export type AuditGraphEdgeType = "contains" | "states" | "flags" | "asks";
+export type EvidenceStrength = "weak" | "moderate" | "strong";
+
+export type EvidenceCandidate = {
+  id: string;
+  claimId: string;
+  sectionId: string;
+  kind: EvidenceKind;
+  text: string;
+  strength: EvidenceStrength;
+  sourceHint?: string;
+};
+
+export type AssumptionKind =
+  | "causal-identification"
+  | "measurement"
+  | "external-validity"
+  | "method-validity"
+  | "data-quality"
+  | "modeling"
+  | "design-requirement"
+  | "theoretical-condition";
+
+export type Assumption = {
+  id: string;
+  claimId: string;
+  kind: AssumptionKind;
+  text: string;
+  status: "candidate" | "stated" | "needs-verification";
+};
+
+export type AuditGraphNodeType = "document" | "section" | "claim" | "evidence" | "assumption" | "finding" | "question";
+
+export type AuditGraphEdgeType =
+  | "contains"
+  | "states"
+  | "supported_by"
+  | "depends_on"
+  | "flags"
+  | "asks";
 
 export type AuditGraphNode = {
   id: string;
@@ -65,7 +111,7 @@ export type AuditGraph = {
   edges: AuditGraphEdge[];
 };
 
-export type MindmapNodeType = "document" | "claim" | "section" | "finding" | "question";
+export type MindmapNodeType = "document" | "claim" | "section" | "evidence" | "assumption" | "finding" | "question";
 
 export type MindmapNode = {
   id: string;
@@ -132,6 +178,8 @@ export type AuditSession = {
   artifacts: {
     sections: Section[];
     claims: Claim[];
+    evidenceCandidates: EvidenceCandidate[];
+    assumptions: Assumption[];
     findings: AuditFinding[];
     reviewerQuestions: string[];
   };
@@ -148,6 +196,8 @@ export type AuditReport = {
     visualization: VisualizationRecommendation;
   };
   claims: Claim[];
+  evidenceCandidates: EvidenceCandidate[];
+  assumptions: Assumption[];
   findings: AuditFinding[];
   graph: AuditGraph;
   mindmap: MindmapView;
