@@ -10,6 +10,7 @@ import type {
   EvidenceCandidate,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
+import { buildRiskHeatmap } from "./risk-heatmap.ts";
 import { recommendVisualization } from "./visualization-adapter.ts";
 
 export function generateAuditReport(input: {
@@ -46,6 +47,12 @@ export function generateAuditReport(input: {
     document: input.document,
     claims: input.claims,
   });
+  const riskHeatmap = buildRiskHeatmap({
+    document: input.document,
+    claims: input.claims,
+    findings: input.findings,
+    citationSupportWarnings: input.citationSupportWarnings,
+  });
 
   return {
     session: {
@@ -74,6 +81,7 @@ export function generateAuditReport(input: {
     citationSupportWarnings: input.citationSupportWarnings,
     assumptions: input.assumptions,
     findings: input.findings,
+    riskHeatmap,
     graph,
     mindmap,
     mindmapMermaid: renderMindmapMermaid(mindmap),

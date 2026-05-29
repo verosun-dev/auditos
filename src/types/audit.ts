@@ -197,6 +197,59 @@ export type AuditFinding = {
   suggestedTest?: string;
 };
 
+export type RiskSignalSource = "audit-finding" | "citation-support-warning";
+
+export type RiskHeatmapSignal = {
+  id: string;
+  source: RiskSignalSource;
+  claimId: string;
+  riskType: string;
+  riskLevel: RiskLevel;
+  message: string;
+};
+
+export type RiskSignalCounts = {
+  low: number;
+  medium: number;
+  high: number;
+};
+
+export type RiskHeatmapCellScope = "document" | "section" | "claim-type";
+
+export type RiskHeatmapCell = {
+  id: string;
+  scope: RiskHeatmapCellScope;
+  label: string;
+  riskScore: number;
+  riskLevel: RiskLevel;
+  claimIds: string[];
+  signalCounts: RiskSignalCounts;
+  topRisks: string[];
+};
+
+export type RiskHeatmapClaim = {
+  claimId: string;
+  claimText: string;
+  claimType: ClaimType;
+  sourceLocation: SourceLocation;
+  riskScore: number;
+  riskLevel: RiskLevel;
+  signalCounts: RiskSignalCounts;
+  topRisks: string[];
+};
+
+export type RiskHeatmap = {
+  document: RiskHeatmapCell;
+  bySection: RiskHeatmapCell[];
+  byClaimType: RiskHeatmapCell[];
+  highestRiskClaims: RiskHeatmapClaim[];
+  legend: {
+    low: string;
+    medium: string;
+    high: string;
+  };
+};
+
 export type AuditSession = {
   sessionId: string;
   createdAt: string;
@@ -229,6 +282,7 @@ export type AuditReport = {
   citationSupportWarnings: CitationSupportWarning[];
   assumptions: Assumption[];
   findings: AuditFinding[];
+  riskHeatmap: RiskHeatmap;
   graph: AuditGraph;
   mindmap: MindmapView;
   mindmapMermaid: string;

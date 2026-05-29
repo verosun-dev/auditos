@@ -41,6 +41,7 @@ src/
     pdf-ingestion.ts
     pipeline.ts
     report-generator.ts
+    risk-heatmap.ts
     section-parser.ts
     visualization-adapter.ts
   types/
@@ -89,6 +90,8 @@ Claim -> Finding -> Reviewer Question
 Claims include source locations so a future UI can jump from a claim back to its section, page range, sentence index, and character range.
 
 Reports also include `citationSupportWarnings`, a first-pass heuristic layer that flags missing, weak, or poorly matched evidence for high-stakes claim types.
+
+Reports include a `riskHeatmap` that aggregates audit findings and citation-support warnings by document, section, claim type, and highest-risk claims.
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 

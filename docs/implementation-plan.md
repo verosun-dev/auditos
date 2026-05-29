@@ -76,10 +76,10 @@ Current implementation:
 - Reports include `evidenceCandidates` and `assumptions`.
 - Claims include source locations with section, page range, sentence index, and character range where available.
 - `citation-support-engine.ts` generates first-pass warnings for missing, weak, or mismatched evidence support.
+- `risk-heatmap.ts` aggregates findings and citation-support warnings by document, section, claim type, and highest-risk claims.
 
 Remaining Phase 1 work:
 
-- Add risk heatmap.
 - Add renderer variants for `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline`.
 
 ## Phase 2: Reviewer Copilot
