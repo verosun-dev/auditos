@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { AuditFinding, Claim } from "../types/audit.ts";
 
 export function auditClaims(claims: Claim[]): AuditFinding[] {
-  return claims.flatMap((claim) => {
+  return claims.flatMap((claim): AuditFinding[] => {
     if (claim.type === "causal") {
       return [
         {
