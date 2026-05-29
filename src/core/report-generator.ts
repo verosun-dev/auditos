@@ -10,6 +10,7 @@ import type {
   EvidenceCandidate,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
+import { buildReviewerCopilot } from "./reviewer-copilot.ts";
 import { buildRiskHeatmap } from "./risk-heatmap.ts";
 import { recommendVisualization } from "./visualization-adapter.ts";
 import { renderVisualizationDiagrams } from "./visualization-renderer.ts";
@@ -66,6 +67,11 @@ export function generateAuditReport(input: {
     findings: input.findings,
     citationSupportWarnings: input.citationSupportWarnings,
   });
+  const reviewerCopilot = buildReviewerCopilot({
+    claims: input.claims,
+    findings: input.findings,
+    citationSupportWarnings: input.citationSupportWarnings,
+  });
 
   return {
     session: {
@@ -100,6 +106,7 @@ export function generateAuditReport(input: {
     mindmapMermaid,
     visualizationDiagrams,
     primaryVisualizationMermaid,
+    reviewerCopilot,
     reviewerQuestions,
     reproducibilityChecklist: [
       "Are all datasets named and accessible?",

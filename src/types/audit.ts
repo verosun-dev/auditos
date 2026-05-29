@@ -258,6 +258,42 @@ export type RiskHeatmap = {
   };
 };
 
+export type ReviewerConcernSeverity = "major" | "minor";
+
+export type ReviewerConcernSource = "audit-finding" | "citation-support-warning";
+
+export type ReviewerReviewPosture = "major-revision" | "focused-revision" | "minor-revision" | "light-review";
+
+export type ReviewerConcern = {
+  id: string;
+  severity: ReviewerConcernSeverity;
+  source: ReviewerConcernSource;
+  sourceId: string;
+  claimId: string;
+  claimText: string;
+  claimType: ClaimType;
+  riskLevel: RiskLevel;
+  title: string;
+  rationale: string;
+  reviewerQuestion: string;
+  suggestedAction: string;
+  sourceLocation: SourceLocation;
+  tags: string[];
+};
+
+export type ReviewerCopilot = {
+  summary: {
+    majorConcernCount: number;
+    minorConcernCount: number;
+    displayedMajorConcernCount: number;
+    displayedMinorConcernCount: number;
+    recommendedReviewPosture: ReviewerReviewPosture;
+    rationale: string[];
+  };
+  majorConcerns: ReviewerConcern[];
+  minorConcerns: ReviewerConcern[];
+};
+
 export type AuditSession = {
   sessionId: string;
   createdAt: string;
@@ -296,6 +332,7 @@ export type AuditReport = {
   mindmapMermaid: string;
   visualizationDiagrams: VisualizationDiagram[];
   primaryVisualizationMermaid: string;
+  reviewerCopilot: ReviewerCopilot;
   reviewerQuestions: string[];
   reproducibilityChecklist: string[];
 };

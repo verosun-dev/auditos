@@ -85,7 +85,13 @@ Remaining Phase 1 work:
 
 ## Phase 2: Reviewer Copilot
 
-- Generate major/minor concern classification.
+Current implementation:
+
+- `reviewer-copilot.ts` classifies findings and citation-support warnings into major and minor reviewer concerns.
+- Reports include `reviewerCopilot.summary`, `reviewerCopilot.majorConcerns`, and `reviewerCopilot.minorConcerns`.
+
+Remaining Phase 2 work:
+
 - Draft review outline.
 - Add hidden prompt detection.
 - Add expert feedback controls.

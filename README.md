@@ -41,6 +41,7 @@ src/
     pdf-ingestion.ts
     pipeline.ts
     report-generator.ts
+    reviewer-copilot.ts
     risk-heatmap.ts
     section-parser.ts
     visualization-adapter.ts
@@ -99,6 +100,8 @@ Claims include source locations so a future UI can jump from a claim back to its
 Reports also include `citationSupportWarnings`, a first-pass heuristic layer that flags missing, weak, or poorly matched evidence for high-stakes claim types.
 
 Reports include a `riskHeatmap` that aggregates audit findings and citation-support warnings by document, section, claim type, and highest-risk claims.
+
+Reports include `reviewerCopilot`, which classifies audit findings and support warnings into major and minor reviewer concerns with suggested reviewer questions and actions.
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 
