@@ -59,6 +59,7 @@ export function buildClaimGraph(input: {
       metadata: {
         claimType: claim.type,
         sectionId: claim.sectionId,
+        sourceLocation: claim.sourceLocation,
       },
     });
     edges.push(edge(claim.sectionId, claim.id, "states"));
@@ -252,6 +253,7 @@ function claimToMindmapNode(input: {
     children,
     metadata: {
       claimType: input.claim.type,
+      sourceLocation: input.claim.sourceLocation,
       evidenceCandidateCount: input.evidenceCandidates.length,
       assumptionCount: input.assumptions.length,
       findingCount: input.findings.length,

@@ -150,11 +150,21 @@ export type AuditDocument = {
   references: Reference[];
 };
 
+export type SourceLocation = {
+  sectionId: string;
+  sectionTitle?: string;
+  pageRange?: [number, number];
+  sentenceIndex?: number;
+  characterRange?: [number, number];
+  locator: string;
+};
+
 export type Claim = {
   id: string;
   text: string;
   type: ClaimType;
   sectionId: string;
+  sourceLocation: SourceLocation;
   evidenceIds: string[];
   riskLevel?: RiskLevel;
 };

@@ -85,6 +85,8 @@ Claim -> Assumption
 Claim -> Finding -> Reviewer Question
 ```
 
+Claims include source locations so a future UI can jump from a claim back to its section, page range, sentence index, and character range.
+
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 
 - `mindmap` / `claim-tree` for conceptual, review, or theory papers.

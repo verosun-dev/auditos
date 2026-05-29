@@ -1,6 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { createStructuredResponse } from "./openai-client.ts";
-import type { Claim, ClaimExtractionMethod, ClaimExtractionMode, ClaimType, Section } from "../types/audit.ts";
+import type {
+  Claim,
+  ClaimExtractionMethod,
+  ClaimExtractionMode,
+  ClaimType,
+  Section,
+  SourceLocation,
+} from "../types/audit.ts";
 
 const CLAIM_SIGNAL =
   /\b(argues?|shows?|finds?|demonstrates?|causes?|reduced?|increased?|outperforms?|should|must|will|can|cannot|designed|supports?|evaluates?|identifies?|proposes?|requires?|depends|is expected to)\b/i;
@@ -33,6 +40,12 @@ type LlmClaim = {
 
 type LlmClaimBatch = {
   claims: LlmClaim[];
+};
+
+type SentenceLocation = {
+  text: string;
+  sentenceIndex: number;
+  characterRange: [number, number];
 };
 
 export async function extractClaims(
@@ -90,19 +103,17 @@ export async function extractClaims(
 
 function extractClaimsHeuristic(sections: Section[]): Claim[] {
   return sections.flatMap((section) => {
-    const sentences = section.text
-      .replace(/\s+/g, " ")
-      .split(/(?<=[.!?])\s+/)
-      .map((sentence) => sentence.trim())
-      .filter((sentence) => sentence.length >= 40 && sentence.length <= 900);
+    const sentences = locateSentences(section.text)
+      .filter((sentence) => sentence.text.length >= 40 && sentence.text.length <= 900);
 
     return sentences
-      .filter((sentence) => CLAIM_SIGNAL.test(sentence))
+      .filter((sentence) => CLAIM_SIGNAL.test(sentence.text))
       .map((sentence) => ({
         id: randomUUID(),
-        text: sentence,
+        text: sentence.text,
         type: "descriptive",
         sectionId: section.id,
+        sourceLocation: sourceLocationFromSentence(section, sentence),
         evidenceIds: [],
       }));
   });
@@ -181,18 +192,24 @@ function buildSectionBatches(sections: Section[]): Section[][] {
 }
 
 function normalizeLlmClaims(claims: LlmClaim[], sections: Section[]): Claim[] {
-  const sectionIds = new Set(sections.map((section) => section.id));
+  const sectionsById = new Map(sections.map((section) => [section.id, section]));
 
   return claims
-    .filter((claim) => sectionIds.has(claim.sectionId))
+    .filter((claim) => sectionsById.has(claim.sectionId))
     .filter((claim) => claim.text.trim().length >= 20)
-    .map((claim) => ({
-      id: randomUUID(),
-      text: claim.text.trim(),
-      type: claim.type,
-      sectionId: claim.sectionId,
-      evidenceIds: claim.evidenceIds ?? [],
-    }));
+    .map((claim) => {
+      const section = sectionsById.get(claim.sectionId);
+      const text = claim.text.trim();
+
+      return {
+        id: randomUUID(),
+        text,
+        type: claim.type,
+        sectionId: claim.sectionId,
+        sourceLocation: sourceLocationForClaimText(section, text),
+        evidenceIds: claim.evidenceIds ?? [],
+      };
+    });
 }
 
 function dedupeClaims(claims: Claim[]): Claim[] {
@@ -211,6 +228,127 @@ function dedupeClaims(claims: Claim[]): Claim[] {
   }
 
   return deduped;
+}
+
+function locateSentences(text: string): SentenceLocation[] {
+  const sentencePattern = /[^.!?]+[.!?]+|[^.!?]+$/g;
+  const sentences: SentenceLocation[] = [];
+  let match: RegExpExecArray | null;
+  let sentenceIndex = 0;
+
+  while ((match = sentencePattern.exec(text)) !== null) {
+    const rawSentence = match[0];
+    const trimmedSentence = rawSentence.trim();
+
+    if (!trimmedSentence) {
+      continue;
+    }
+
+    const leadingWhitespace = rawSentence.search(/\S/);
+    const start = match.index + Math.max(leadingWhitespace, 0);
+    const end = start + trimmedSentence.length;
+
+    sentences.push({
+      text: trimmedSentence,
+      sentenceIndex,
+      characterRange: [start, end],
+    });
+    sentenceIndex += 1;
+  }
+
+  return sentences;
+}
+
+function sourceLocationForClaimText(section: Section | undefined, claimText: string): SourceLocation {
+  if (!section) {
+    return {
+      sectionId: "unknown",
+      locator: "unknown section",
+    };
+  }
+
+  const exactIndex = section.text.indexOf(claimText);
+
+  if (exactIndex >= 0) {
+    return sourceLocationFromSentence(section, {
+      text: claimText,
+      sentenceIndex: sentenceIndexForOffset(section.text, exactIndex),
+      characterRange: [exactIndex, exactIndex + claimText.length],
+    });
+  }
+
+  const bestSentence = findBestSentenceMatch(section.text, claimText);
+  return bestSentence ? sourceLocationFromSentence(section, bestSentence) : sourceLocationFromSection(section);
+}
+
+function findBestSentenceMatch(sectionText: string, claimText: string): SentenceLocation | undefined {
+  const claimTerms = importantTerms(claimText);
+  let bestSentence: SentenceLocation | undefined;
+  let bestOverlap = 0;
+
+  for (const sentence of locateSentences(sectionText)) {
+    const sentenceTerms = importantTerms(sentence.text);
+    let overlap = 0;
+
+    for (const term of claimTerms) {
+      if (sentenceTerms.has(term)) {
+        overlap += 1;
+      }
+    }
+
+    if (overlap > bestOverlap) {
+      bestOverlap = overlap;
+      bestSentence = sentence;
+    }
+  }
+
+  return bestOverlap >= 2 ? bestSentence : undefined;
+}
+
+function sourceLocationFromSentence(section: Section, sentence: SentenceLocation): SourceLocation {
+  return {
+    sectionId: section.id,
+    sectionTitle: section.title,
+    pageRange: section.pageRange,
+    sentenceIndex: sentence.sentenceIndex,
+    characterRange: sentence.characterRange,
+    locator: formatLocator(section, sentence.sentenceIndex),
+  };
+}
+
+function sourceLocationFromSection(section: Section): SourceLocation {
+  return {
+    sectionId: section.id,
+    sectionTitle: section.title,
+    pageRange: section.pageRange,
+    locator: formatLocator(section),
+  };
+}
+
+function formatLocator(section: Section, sentenceIndex?: number): string {
+  const pageLabel = section.pageRange ? `pages ${section.pageRange.join("-")}` : "page unknown";
+  const sentenceLabel = sentenceIndex === undefined ? "" : `, sentence ${sentenceIndex + 1}`;
+  return `${section.title} (${pageLabel}${sentenceLabel})`;
+}
+
+function sentenceIndexForOffset(text: string, offset: number): number {
+  const sentences = locateSentences(text);
+  const index = sentences.findIndex(
+    (sentence) => offset >= sentence.characterRange[0] && offset <= sentence.characterRange[1],
+  );
+
+  return index >= 0 ? index : 0;
+}
+
+function importantTerms(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/)
+      .filter((term) => term.length >= 5)
+      .filter((term) => !CLAIM_LOCATION_STOP_WORDS.has(term)),
+  );
 }
 
 function truncateForLlm(text: string, maxChars: number): string {
@@ -271,3 +409,22 @@ const CLAIM_EXTRACTION_SCHEMA = {
   },
   required: ["claims"],
 } satisfies Record<string, unknown>;
+
+const CLAIM_LOCATION_STOP_WORDS = new Set([
+  "about",
+  "after",
+  "again",
+  "because",
+  "between",
+  "claim",
+  "could",
+  "document",
+  "should",
+  "their",
+  "there",
+  "these",
+  "those",
+  "which",
+  "where",
+  "would",
+]);

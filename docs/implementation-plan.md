@@ -74,10 +74,10 @@ Current implementation:
 - `evidence-extractor.ts` generates local evidence candidates from source sections.
 - `assumption-extractor.ts` generates candidate assumptions from claim type.
 - Reports include `evidenceCandidates` and `assumptions`.
+- Claims include source locations with section, page range, sentence index, and character range where available.
 
 Remaining Phase 1 work:
 
-- Link claims to source locations.
 - Add citation-support warnings.
 - Add risk heatmap.
 - Add renderer variants for `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline`.
