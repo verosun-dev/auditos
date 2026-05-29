@@ -65,6 +65,7 @@ Adaptive visualization modes:
 | Policy, social science, or causal inference paper | `causal-mechanism-map` | Show treatment, mechanism, outcome, confounders, assumptions, and external-validity boundaries. |
 | Mathematics or theoretical computer science paper | `theorem-dependency-graph` | Show definitions, lemmas, propositions, theorems, assumptions, and proof dependencies. |
 | ML, algorithm, or system paper | `workflow-pipeline` | Show data, preprocessing, model, training, evaluation, baselines, ablations, and deployment path. |
+| STEM paper with code, repository, notebook, or replication package signals | `code-reproduction-map` | Show the path from paper code to environment, data, run commands, and output comparison. |
 
 Current implementation:
 
@@ -72,6 +73,9 @@ Current implementation:
 - Reports include the recommendation in `metadata.visualization`.
 - `visualization-renderer.ts` renders Mermaid variants for each adaptive visualization mode.
 - Reports include `visualizationDiagrams` for mode switching and `primaryVisualizationMermaid` for the recommended view.
+- `code-reproduction.ts` extracts first-pass code reproduction artifacts such as repositories, commands, environments, datasets, target results, hardware, seeds, dependencies, and access boundaries.
+- Reports include `codeReproductionPlan` and a `code-reproduction-map` Mermaid visualization.
+- CLI exports can target a specific visualization with `--out-visualization-mode`, including `code-reproduction-map`.
 - `evidence-extractor.ts` generates local evidence candidates from source sections.
 - `assumption-extractor.ts` generates candidate assumptions from claim type.
 - Reports include `evidenceCandidates` and `assumptions`.
@@ -110,6 +114,7 @@ Core screens:
 - Document reader with source-location anchors.
 - Claim list and claim detail drawer.
 - Adaptive visualization panel with `mindmap`, `claim-tree`, `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline` tabs.
+- Code reproduction panel for STEM papers with repository, environment, data, command, and output-comparison steps.
 - Risk heatmap dashboard.
 - Reviewer Copilot panel with major/minor concerns and draft review outline.
 - Export panel for JSON, Mermaid, and review outline artifacts.
@@ -121,6 +126,7 @@ Implementation steps:
 - Add a PDF/text upload workflow.
 - Render audit summary, claims, findings, evidence candidates, assumptions, and source locations.
 - Render Mermaid visualizations from `visualizationDiagrams` and `primaryVisualizationMermaid`.
+- Render `codeReproductionPlan` and the `code-reproduction-map` for STEM reproduction workflows.
 - Render `riskHeatmap` as dashboard tiles and grouped tables.
 - Render `reviewerCopilot` as a reviewer workspace.
 - Add loading, empty, error, and rerun states.
@@ -135,6 +141,7 @@ Status:
 
 - Generate robustness-check suggestions.
 - Produce replication notebook skeletons.
+- Add sandboxed code reproduction runs for STEM papers after reviewer confirmation.
 - Extract causal graph candidates.
 - Add sensitivity analysis templates.
 
@@ -183,6 +190,7 @@ Covered in code:
 - Audit findings.
 - Risk heatmap.
 - Adaptive visualization recommendation and Mermaid rendering.
+- First-pass code reproduction planning and visualization for STEM papers.
 - Reviewer Copilot concern classification.
 - Draft review outline.
 - First-pass hidden prompt and prompt-injection detection.

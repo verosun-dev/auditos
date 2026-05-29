@@ -4,6 +4,7 @@ import type {
   AuditFinding,
   CitationSupportWarning,
   Claim,
+  CodeReproductionPlan,
   EvidenceCandidate,
   MindmapView,
   VisualizationDiagram,
@@ -20,6 +21,7 @@ export function renderVisualizationDiagrams(input: {
   assumptions: Assumption[];
   findings: AuditFinding[];
   mindmap: MindmapView;
+  codeReproductionPlan: CodeReproductionPlan;
 }): VisualizationDiagram[] {
   return [
     {
@@ -63,6 +65,13 @@ export function renderVisualizationDiagrams(input: {
       title: "Workflow Pipeline",
       description: "Pipeline view for data, preprocessing, method, model or system claims, evaluation, and audit risks.",
       mermaid: renderWorkflowPipeline(input),
+    },
+    {
+      mode: "code-reproduction-map",
+      format: "mermaid",
+      title: "Code Reproduction Map",
+      description: "STEM reproducibility view for locating code, preparing environments, acquiring data, running commands, and comparing outputs.",
+      mermaid: renderCodeReproductionMap(input.codeReproductionPlan),
     },
   ];
 }
@@ -298,6 +307,45 @@ function renderWorkflowPipeline(input: {
   return finalizeMermaid(lines);
 }
 
+function renderCodeReproductionMap(plan: CodeReproductionPlan): string {
+  const lines = mermaidHeader("LR", "Code Reproduction Workflow");
+  const readinessId = "code_readiness";
+  appendNode(lines, readinessId, `Readiness: ${plan.summary.readiness}`);
+  appendEdge(lines, "document", readinessId, "assess");
+
+  const stepIds = plan.steps.map((step, index) => `code_step_${index}`);
+
+  for (const [stepIndex, step] of plan.steps.entries()) {
+    const stepId = stepIds[stepIndex];
+    appendNode(lines, stepId, `${step.title}: ${step.status}`);
+    appendEdge(lines, stepIndex === 0 ? readinessId : stepIds[stepIndex - 1], stepId);
+
+    const artifacts = step.artifactIds
+      .map((artifactId) => plan.artifacts.find((artifact) => artifact.id === artifactId))
+      .filter(isCodeArtifact)
+      .slice(0, 3);
+
+    if (artifacts.length === 0) {
+      const missingId = `${stepId}_missing`;
+      appendNode(lines, missingId, "Missing signal");
+      appendEdge(lines, stepId, missingId, "needs");
+      continue;
+    }
+
+    for (const [artifactIndex, artifact] of artifacts.entries()) {
+      const artifactId = `${stepId}_artifact_${artifactIndex}`;
+      appendNode(lines, artifactId, `${artifact.label}: ${artifact.text}`);
+      appendEdge(lines, artifactId, stepId, artifact.kind);
+    }
+  }
+
+  const safetyId = "code_safety";
+  appendNode(lines, safetyId, "Sandbox + reviewer confirmation before execution");
+  appendEdge(lines, stepIds[stepIds.length - 1] ?? readinessId, safetyId, "guardrail");
+
+  return finalizeMermaid(lines);
+}
+
 function appendEvidencePool(
   lines: string[],
   parentId: string,
@@ -406,6 +454,10 @@ function groupByClaimId<T extends { claimId: string }>(items: T[]): Map<string, 
   }
 
   return grouped;
+}
+
+function isCodeArtifact<T>(value: T | undefined): value is T {
+  return Boolean(value);
 }
 
 function mermaidHeader(direction: "LR" | "TD", documentTitle: string): string[] {

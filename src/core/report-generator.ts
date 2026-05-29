@@ -7,6 +7,7 @@ import type {
   CitationSupportWarning,
   Claim,
   ClaimExtractionMethod,
+  CodeReproductionPlan,
   EvidenceCandidate,
   PromptInjectionScan,
 } from "../types/audit.ts";
@@ -23,6 +24,7 @@ export function generateAuditReport(input: {
   evidenceCandidates: EvidenceCandidate[];
   citationSupportWarnings: CitationSupportWarning[];
   promptInjectionScan: PromptInjectionScan;
+  codeReproductionPlan: CodeReproductionPlan;
   assumptions: Assumption[];
   findings: AuditFinding[];
   claimExtraction: {
@@ -60,6 +62,7 @@ export function generateAuditReport(input: {
     assumptions: input.assumptions,
     findings: input.findings,
     mindmap,
+    codeReproductionPlan: input.codeReproductionPlan,
   });
   const primaryVisualizationMermaid =
     visualizationDiagrams.find((diagram) => diagram.mode === visualization.primaryMode)?.mermaid ?? mindmapMermaid;
@@ -86,6 +89,7 @@ export function generateAuditReport(input: {
         evidenceCandidates: input.evidenceCandidates,
         citationSupportWarnings: input.citationSupportWarnings,
         promptInjectionScan: input.promptInjectionScan,
+        codeReproductionPlan: input.codeReproductionPlan,
         assumptions: input.assumptions,
         findings: input.findings,
         reviewerQuestions,
@@ -103,6 +107,7 @@ export function generateAuditReport(input: {
     evidenceCandidates: input.evidenceCandidates,
     citationSupportWarnings: input.citationSupportWarnings,
     promptInjectionScan: input.promptInjectionScan,
+    codeReproductionPlan: input.codeReproductionPlan,
     assumptions: input.assumptions,
     findings: input.findings,
     riskHeatmap,

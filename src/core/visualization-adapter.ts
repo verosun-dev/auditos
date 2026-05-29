@@ -13,6 +13,7 @@ export function recommendVisualization(input: {
     hasCausalLanguage: hasCausalLanguage(input.claims, signalText),
     hasMachineLearningWorkflow: hasMachineLearningWorkflow(signalText),
     hasSystemPipeline: hasSystemPipeline(signalText),
+    hasCodeReproductionArtifacts: hasCodeReproductionArtifacts(signalText),
     hasConceptualStructure: hasConceptualStructure(input.document.sections, input.claims, signalText),
   };
   const scores: VisualizationSignalScores = {
@@ -22,6 +23,7 @@ export function recommendVisualization(input: {
     "causal-mechanism-map": 0,
     "theorem-dependency-graph": 0,
     "workflow-pipeline": 0,
+    "code-reproduction-map": 0,
   };
 
   if (signals.hasTheorems) {
@@ -38,6 +40,10 @@ export function recommendVisualization(input: {
 
   if (signals.hasMachineLearningWorkflow || signals.hasSystemPipeline) {
     scores["workflow-pipeline"] += 7;
+  }
+
+  if (signals.hasCodeReproductionArtifacts) {
+    scores["code-reproduction-map"] += 8;
   }
 
   if (signals.hasConceptualStructure) {
@@ -100,6 +106,12 @@ function hasSystemPipeline(text: string): boolean {
   );
 }
 
+function hasCodeReproductionArtifacts(text: string): boolean {
+  return /\b(code|github|gitlab|repository|repo|notebook|colab|requirements\.txt|environment\.ya?ml|docker|conda|pip install|python\s+\w+\.py|Rscript|make|reproduce|replicate|replication package)\b/i.test(
+    text,
+  );
+}
+
 function hasConceptualStructure(sections: Section[], claims: Claim[], text: string): boolean {
   return (
     sections.length >= 5 ||
@@ -141,6 +153,10 @@ function buildRationale(
 
   if (primaryMode === "workflow-pipeline") {
     rationale.push("Document contains model, system, algorithm, or pipeline workflow signals.");
+  }
+
+  if (primaryMode === "code-reproduction-map") {
+    rationale.push("Document contains code, repository, environment, command, or replication-package signals.");
   }
 
   if (signals.hasConceptualStructure) {

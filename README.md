@@ -35,6 +35,7 @@ src/
     claim-graph.ts
     claim-classifier.ts
     claim-extractor.ts
+    code-reproduction.ts
     document-ingestion.ts
     evidence-extractor.ts
     hidden-prompt-detector.ts
@@ -89,6 +90,12 @@ Run a PDF audit and write the recommended adaptive visualization:
 node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out-visualization reports/paper-visualization.mmd
 ```
 
+Write a specific visualization, such as the STEM code reproduction map:
+
+```bash
+node src/index.ts /path/to/paper.pdf --out reports/paper-audit-report.json --out-visualization reports/paper-code-reproduction.mmd --out-visualization-mode code-reproduction-map
+```
+
 The report includes a machine-readable `graph` and a claim-centric `mindmap`. The mindmap is a first-pass view: it selects the highest-risk or most structurally important claims as primary branches, then attaches section context, risk findings, and reviewer questions below each claim.
 
 The graph now includes candidate evidence and assumptions:
@@ -110,6 +117,8 @@ Reports include `reviewerCopilot`, which classifies audit findings and support w
 
 Reports include `promptInjectionScan`, a first-pass local scan for hidden prompts, instruction overrides, tool-command injection, jailbreak language, and other prompt-injection patterns.
 
+Reports include `codeReproductionPlan`, a first-pass STEM reproducibility plan that extracts repository, command, environment, dataset, target-result, hardware, seed, dependency, and access-boundary signals. The visualization bundle includes `code-reproduction-map` for inspecting the reproduction workflow.
+
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 
 - `mindmap` / `claim-tree` for conceptual, review, or theory papers.
@@ -117,6 +126,7 @@ AuditOS also recommends an adaptive visualization mode in `metadata.visualizatio
 - `causal-mechanism-map` for policy, social science, or causal inference papers.
 - `theorem-dependency-graph` for mathematics and theoretical computer science.
 - `workflow-pipeline` for ML, algorithm, or system papers.
+- `code-reproduction-map` for STEM papers with code, notebooks, repositories, commands, or replication package signals.
 
 Reports include `visualizationDiagrams`, a Mermaid diagram bundle for all supported modes, plus `primaryVisualizationMermaid`, which matches the recommended primary mode.
 

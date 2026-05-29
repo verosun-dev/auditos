@@ -3,6 +3,7 @@ import { extractAssumptions } from "./assumption-extractor.ts";
 import { generateCitationSupportWarnings } from "./citation-support-engine.ts";
 import { classifyClaims } from "./claim-classifier.ts";
 import { extractClaims } from "./claim-extractor.ts";
+import { buildCodeReproductionPlan } from "./code-reproduction.ts";
 import { ingestDocument } from "./document-ingestion.ts";
 import { extractEvidenceCandidates } from "./evidence-extractor.ts";
 import { detectHiddenPrompts } from "./hidden-prompt-detector.ts";
@@ -20,6 +21,7 @@ export async function runInitialAudit(input: {
   const session = initializeAuditSession(input);
   const document = await ingestDocument(input.documentPath);
   const promptInjectionScan = detectHiddenPrompts(document);
+  const codeReproductionPlan = buildCodeReproductionPlan(document);
   const extraction = await extractClaims(document.sections, {
     mode: input.claimExtractionMode,
     model: input.claimExtractionModel,
@@ -44,6 +46,7 @@ export async function runInitialAudit(input: {
     evidenceCandidates,
     citationSupportWarnings,
     promptInjectionScan,
+    codeReproductionPlan,
     assumptions,
     findings,
     claimExtraction: {

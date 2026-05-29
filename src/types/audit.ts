@@ -24,7 +24,8 @@ export type VisualizationMode =
   | "claim-evidence-graph"
   | "causal-mechanism-map"
   | "theorem-dependency-graph"
-  | "workflow-pipeline";
+  | "workflow-pipeline"
+  | "code-reproduction-map";
 
 export type VisualizationRecommendation = {
   primaryMode: VisualizationMode;
@@ -37,6 +38,7 @@ export type VisualizationRecommendation = {
     hasCausalLanguage: boolean;
     hasMachineLearningWorkflow: boolean;
     hasSystemPipeline: boolean;
+    hasCodeReproductionArtifacts: boolean;
     hasConceptualStructure: boolean;
   };
 };
@@ -291,6 +293,51 @@ export type PromptInjectionScan = {
   warnings: PromptInjectionWarning[];
 };
 
+export type CodeReproductionArtifactKind =
+  | "repository"
+  | "command"
+  | "environment"
+  | "dataset"
+  | "result"
+  | "hardware"
+  | "random-seed"
+  | "dependency"
+  | "license";
+
+export type CodeReproductionReadiness = "ready-candidate" | "partial" | "not-enough-information";
+
+export type CodeReproductionArtifact = {
+  id: string;
+  kind: CodeReproductionArtifactKind;
+  label: string;
+  text: string;
+  sectionId: string;
+  sectionTitle: string;
+  pageRange?: [number, number];
+};
+
+export type CodeReproductionStep = {
+  id: string;
+  title: string;
+  description: string;
+  artifactIds: string[];
+  status: "available" | "needs-review" | "missing";
+};
+
+export type CodeReproductionPlan = {
+  summary: {
+    readiness: CodeReproductionReadiness;
+    artifactCount: number;
+    repositoryCount: number;
+    commandCount: number;
+    datasetCount: number;
+    rationale: string[];
+  };
+  artifacts: CodeReproductionArtifact[];
+  steps: CodeReproductionStep[];
+  safetyNotes: string[];
+};
+
 export type ReviewerConcernSeverity = "major" | "minor";
 
 export type ReviewerConcernSource = "audit-finding" | "citation-support-warning";
@@ -357,6 +404,7 @@ export type AuditSession = {
     evidenceCandidates: EvidenceCandidate[];
     citationSupportWarnings: CitationSupportWarning[];
     promptInjectionScan: PromptInjectionScan;
+    codeReproductionPlan: CodeReproductionPlan;
     assumptions: Assumption[];
     findings: AuditFinding[];
     reviewerQuestions: string[];
@@ -377,6 +425,7 @@ export type AuditReport = {
   evidenceCandidates: EvidenceCandidate[];
   citationSupportWarnings: CitationSupportWarning[];
   promptInjectionScan: PromptInjectionScan;
+  codeReproductionPlan: CodeReproductionPlan;
   assumptions: Assumption[];
   findings: AuditFinding[];
   riskHeatmap: RiskHeatmap;
