@@ -258,6 +258,39 @@ export type RiskHeatmap = {
   };
 };
 
+export type PromptInjectionWarningType =
+  | "instruction-override"
+  | "role-impersonation"
+  | "secret-exfiltration"
+  | "tool-command-injection"
+  | "hidden-payload-marker"
+  | "policy-bypass"
+  | "output-control";
+
+export type PromptInjectionWarning = {
+  id: string;
+  warningType: PromptInjectionWarningType;
+  severity: RiskLevel;
+  sectionId: string;
+  sectionTitle: string;
+  pageRange?: [number, number];
+  characterRange: [number, number];
+  matchedText: string;
+  trigger: string;
+  rationale: string;
+  suggestedAction: string;
+};
+
+export type PromptInjectionScan = {
+  summary: {
+    warningCount: number;
+    highSeverityCount: number;
+    quarantined: boolean;
+    rationale: string[];
+  };
+  warnings: PromptInjectionWarning[];
+};
+
 export type ReviewerConcernSeverity = "major" | "minor";
 
 export type ReviewerConcernSource = "audit-finding" | "citation-support-warning";
@@ -323,6 +356,7 @@ export type AuditSession = {
     claims: Claim[];
     evidenceCandidates: EvidenceCandidate[];
     citationSupportWarnings: CitationSupportWarning[];
+    promptInjectionScan: PromptInjectionScan;
     assumptions: Assumption[];
     findings: AuditFinding[];
     reviewerQuestions: string[];
@@ -342,6 +376,7 @@ export type AuditReport = {
   claims: Claim[];
   evidenceCandidates: EvidenceCandidate[];
   citationSupportWarnings: CitationSupportWarning[];
+  promptInjectionScan: PromptInjectionScan;
   assumptions: Assumption[];
   findings: AuditFinding[];
   riskHeatmap: RiskHeatmap;

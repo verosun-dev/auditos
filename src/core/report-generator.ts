@@ -8,6 +8,7 @@ import type {
   Claim,
   ClaimExtractionMethod,
   EvidenceCandidate,
+  PromptInjectionScan,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
 import { buildReviewerCopilot } from "./reviewer-copilot.ts";
@@ -21,6 +22,7 @@ export function generateAuditReport(input: {
   claims: Claim[];
   evidenceCandidates: EvidenceCandidate[];
   citationSupportWarnings: CitationSupportWarning[];
+  promptInjectionScan: PromptInjectionScan;
   assumptions: Assumption[];
   findings: AuditFinding[];
   claimExtraction: {
@@ -83,6 +85,7 @@ export function generateAuditReport(input: {
         claims: input.claims,
         evidenceCandidates: input.evidenceCandidates,
         citationSupportWarnings: input.citationSupportWarnings,
+        promptInjectionScan: input.promptInjectionScan,
         assumptions: input.assumptions,
         findings: input.findings,
         reviewerQuestions,
@@ -99,6 +102,7 @@ export function generateAuditReport(input: {
     claims: input.claims,
     evidenceCandidates: input.evidenceCandidates,
     citationSupportWarnings: input.citationSupportWarnings,
+    promptInjectionScan: input.promptInjectionScan,
     assumptions: input.assumptions,
     findings: input.findings,
     riskHeatmap,

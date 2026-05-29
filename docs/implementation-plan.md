@@ -90,10 +90,11 @@ Current implementation:
 - `reviewer-copilot.ts` classifies findings and citation-support warnings into major and minor reviewer concerns.
 - Reports include `reviewerCopilot.summary`, `reviewerCopilot.majorConcerns`, and `reviewerCopilot.minorConcerns`.
 - Reports include `reviewerCopilot.reviewOutline`, a draft review structure with summary, strengths, major issues, minor issues, required revisions, and closing assessment.
+- `hidden-prompt-detector.ts` scans document sections for first-pass prompt-injection and hidden-instruction patterns.
+- Reports include `promptInjectionScan.summary` and `promptInjectionScan.warnings`.
 
 Remaining Phase 2 work:
 
-- Add hidden prompt detection.
 - Add expert feedback controls.
 
 ## Web App and Interface Track
@@ -162,6 +163,7 @@ Goal: extend AuditOS beyond the initial research-reviewer MVP into domain-specif
 Goal: make the system safe enough for high-stakes document review.
 
 - Add prompt-injection detection and quarantine behavior.
+- Prompt-injection detection is implemented as a first-pass local scanner; quarantine is represented in `promptInjectionScan.summary.quarantined`.
 - Keep professional boundary warnings visible in domain-specific modules.
 - Add audit transparency metadata showing which parts are heuristic, LLM-generated, or user-reviewed.
 - Avoid storing uploaded documents outside the local workspace in the prototype.
@@ -183,6 +185,7 @@ Covered in code:
 - Adaptive visualization recommendation and Mermaid rendering.
 - Reviewer Copilot concern classification.
 - Draft review outline.
+- First-pass hidden prompt and prompt-injection detection.
 
 Partially covered:
 
@@ -190,7 +193,7 @@ Partially covered:
 - Audit engines: causal, numerical, methodological, and normative checks exist as first-pass rules; statistical, mathematical, finance, law, clinical, and policy engines are not complete.
 - Testing and simulation: planned but not implemented.
 - User interface and workflow: planned here, not implemented yet.
-- Safety and governance: prompt-injection defense is planned but not implemented.
+- Safety and governance: prompt-injection detection exists as a local scanner, but deeper quarantine workflow and governance UX are not implemented.
 
 Not yet covered:
 

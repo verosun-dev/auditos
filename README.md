@@ -37,6 +37,7 @@ src/
     claim-extractor.ts
     document-ingestion.ts
     evidence-extractor.ts
+    hidden-prompt-detector.ts
     initialize-audit.ts
     pdf-ingestion.ts
     pipeline.ts
@@ -106,6 +107,8 @@ Reports also include `citationSupportWarnings`, a first-pass heuristic layer tha
 Reports include a `riskHeatmap` that aggregates audit findings and citation-support warnings by document, section, claim type, and highest-risk claims.
 
 Reports include `reviewerCopilot`, which classifies audit findings and support warnings into major and minor reviewer concerns with suggested reviewer questions and actions. It also drafts `reviewerCopilot.reviewOutline` so the audit can be turned into a structured review with summary, strengths, issues, required revisions, and closing assessment.
+
+Reports include `promptInjectionScan`, a first-pass local scan for hidden prompts, instruction overrides, tool-command injection, jailbreak language, and other prompt-injection patterns.
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 
