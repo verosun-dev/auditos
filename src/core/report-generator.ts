@@ -4,6 +4,7 @@ import type {
   AuditReport,
   AuditSession,
   Assumption,
+  CitationSupportWarning,
   Claim,
   ClaimExtractionMethod,
   EvidenceCandidate,
@@ -16,6 +17,7 @@ export function generateAuditReport(input: {
   document: AuditDocument;
   claims: Claim[];
   evidenceCandidates: EvidenceCandidate[];
+  citationSupportWarnings: CitationSupportWarning[];
   assumptions: Assumption[];
   findings: AuditFinding[];
   claimExtraction: {
@@ -53,6 +55,7 @@ export function generateAuditReport(input: {
         sections: input.document.sections,
         claims: input.claims,
         evidenceCandidates: input.evidenceCandidates,
+        citationSupportWarnings: input.citationSupportWarnings,
         assumptions: input.assumptions,
         findings: input.findings,
         reviewerQuestions,
@@ -68,6 +71,7 @@ export function generateAuditReport(input: {
     },
     claims: input.claims,
     evidenceCandidates: input.evidenceCandidates,
+    citationSupportWarnings: input.citationSupportWarnings,
     assumptions: input.assumptions,
     findings: input.findings,
     graph,

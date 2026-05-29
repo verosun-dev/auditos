@@ -1,5 +1,6 @@
 import { auditClaims } from "./audit-engine.ts";
 import { extractAssumptions } from "./assumption-extractor.ts";
+import { generateCitationSupportWarnings } from "./citation-support-engine.ts";
 import { classifyClaims } from "./claim-classifier.ts";
 import { extractClaims } from "./claim-extractor.ts";
 import { ingestDocument } from "./document-ingestion.ts";
@@ -27,6 +28,10 @@ export async function runInitialAudit(input: {
     claims,
     sections: document.sections,
   });
+  const citationSupportWarnings = generateCitationSupportWarnings({
+    claims,
+    evidenceCandidates,
+  });
   const assumptions = extractAssumptions(claims);
   const findings = auditClaims(claims);
 
@@ -35,6 +40,7 @@ export async function runInitialAudit(input: {
     document,
     claims,
     evidenceCandidates,
+    citationSupportWarnings,
     assumptions,
     findings,
     claimExtraction: {

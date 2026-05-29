@@ -15,6 +15,7 @@ export function initializeAuditSession(input: {
       sections: [],
       claims: [],
       evidenceCandidates: [],
+      citationSupportWarnings: [],
       assumptions: [],
       findings: [],
       reviewerQuestions: [],

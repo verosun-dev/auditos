@@ -31,6 +31,7 @@ src/
   core/
     audit-engine.ts
     assumption-extractor.ts
+    citation-support-engine.ts
     claim-graph.ts
     claim-classifier.ts
     claim-extractor.ts
@@ -86,6 +87,8 @@ Claim -> Finding -> Reviewer Question
 ```
 
 Claims include source locations so a future UI can jump from a claim back to its section, page range, sentence index, and character range.
+
+Reports also include `citationSupportWarnings`, a first-pass heuristic layer that flags missing, weak, or poorly matched evidence for high-stakes claim types.
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 

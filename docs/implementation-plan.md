@@ -75,10 +75,10 @@ Current implementation:
 - `assumption-extractor.ts` generates candidate assumptions from claim type.
 - Reports include `evidenceCandidates` and `assumptions`.
 - Claims include source locations with section, page range, sentence index, and character range where available.
+- `citation-support-engine.ts` generates first-pass warnings for missing, weak, or mismatched evidence support.
 
 Remaining Phase 1 work:
 
-- Add citation-support warnings.
 - Add risk heatmap.
 - Add renderer variants for `claim-evidence-graph`, `causal-mechanism-map`, `theorem-dependency-graph`, and `workflow-pipeline`.
 

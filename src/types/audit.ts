@@ -63,6 +63,24 @@ export type EvidenceCandidate = {
   sourceHint?: string;
 };
 
+export type CitationSupportWarningType =
+  | "missing-evidence"
+  | "weak-evidence"
+  | "causal-claim-without-design-evidence"
+  | "numerical-claim-without-traceable-source"
+  | "methodological-claim-without-method-evidence"
+  | "normative-claim-without-requirement-evidence";
+
+export type CitationSupportWarning = {
+  id: string;
+  claimId: string;
+  warningType: CitationSupportWarningType;
+  severity: RiskLevel;
+  message: string;
+  evidenceIds: string[];
+  suggestedAction: string;
+};
+
 export type AssumptionKind =
   | "causal-identification"
   | "measurement"
@@ -189,6 +207,7 @@ export type AuditSession = {
     sections: Section[];
     claims: Claim[];
     evidenceCandidates: EvidenceCandidate[];
+    citationSupportWarnings: CitationSupportWarning[];
     assumptions: Assumption[];
     findings: AuditFinding[];
     reviewerQuestions: string[];
@@ -207,6 +226,7 @@ export type AuditReport = {
   };
   claims: Claim[];
   evidenceCandidates: EvidenceCandidate[];
+  citationSupportWarnings: CitationSupportWarning[];
   assumptions: Assumption[];
   findings: AuditFinding[];
   graph: AuditGraph;
