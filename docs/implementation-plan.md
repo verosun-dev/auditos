@@ -89,10 +89,10 @@ Current implementation:
 
 - `reviewer-copilot.ts` classifies findings and citation-support warnings into major and minor reviewer concerns.
 - Reports include `reviewerCopilot.summary`, `reviewerCopilot.majorConcerns`, and `reviewerCopilot.minorConcerns`.
+- Reports include `reviewerCopilot.reviewOutline`, a draft review structure with summary, strengths, major issues, minor issues, required revisions, and closing assessment.
 
 Remaining Phase 2 work:
 
-- Draft review outline.
 - Add hidden prompt detection.
 - Add expert feedback controls.
 

@@ -5,6 +5,8 @@ import type {
   CitationSupportWarningType,
   Claim,
   ClaimType,
+  ReviewOutline,
+  ReviewOutlineSection,
   ReviewerConcern,
   ReviewerConcernSeverity,
   ReviewerCopilot,
@@ -13,8 +15,12 @@ import type {
 } from "../types/audit.ts";
 
 const MAX_CONCERNS_PER_SEVERITY = 12;
+const MAX_OUTLINE_ISSUES_PER_SEVERITY = 6;
+
+type ReviewerCopilotSummary = ReviewerCopilot["summary"];
 
 export function buildReviewerCopilot(input: {
+  documentTitle?: string;
   claims: Claim[];
   findings: AuditFinding[];
   citationSupportWarnings: CitationSupportWarning[];
@@ -32,19 +38,145 @@ export function buildReviewerCopilot(input: {
   const allMinorConcerns = concerns.filter((concern) => concern.severity === "minor");
   const majorConcerns = allMajorConcerns.slice(0, MAX_CONCERNS_PER_SEVERITY);
   const minorConcerns = allMinorConcerns.slice(0, MAX_CONCERNS_PER_SEVERITY);
+  const summary: ReviewerCopilotSummary = {
+    majorConcernCount: allMajorConcerns.length,
+    minorConcernCount: allMinorConcerns.length,
+    displayedMajorConcernCount: majorConcerns.length,
+    displayedMinorConcernCount: minorConcerns.length,
+    recommendedReviewPosture: recommendReviewPosture(allMajorConcerns, allMinorConcerns),
+    rationale: buildSummaryRationale(allMajorConcerns, allMinorConcerns),
+  };
 
   return {
-    summary: {
-      majorConcernCount: allMajorConcerns.length,
-      minorConcernCount: allMinorConcerns.length,
-      displayedMajorConcernCount: majorConcerns.length,
-      displayedMinorConcernCount: minorConcerns.length,
-      recommendedReviewPosture: recommendReviewPosture(allMajorConcerns, allMinorConcerns),
-      rationale: buildSummaryRationale(allMajorConcerns, allMinorConcerns),
-    },
+    summary,
     majorConcerns,
     minorConcerns,
+    reviewOutline: buildReviewOutline({
+      documentTitle: input.documentTitle,
+      claims: input.claims,
+      summary,
+      majorConcerns,
+      minorConcerns,
+    }),
   };
+}
+
+function buildReviewOutline(input: {
+  documentTitle?: string;
+  claims: Claim[];
+  summary: ReviewerCopilotSummary;
+  majorConcerns: ReviewerConcern[];
+  minorConcerns: ReviewerConcern[];
+}): ReviewOutline {
+  const title = `Review outline for ${input.documentTitle ?? "untitled document"}`;
+
+  return {
+    title,
+    recommendation: input.summary.recommendedReviewPosture,
+    executiveSummary: buildExecutiveSummary(input.summary),
+    strengths: buildStrengths(input.claims),
+    majorIssues: input.majorConcerns
+      .slice(0, MAX_OUTLINE_ISSUES_PER_SEVERITY)
+      .map((concern, index) => concernToOutlineSection(concern, index + 1)),
+    minorIssues: input.minorConcerns
+      .slice(0, MAX_OUTLINE_ISSUES_PER_SEVERITY)
+      .map((concern, index) => concernToOutlineSection(concern, index + 1)),
+    requiredRevisions: buildRequiredRevisions(input.majorConcerns, input.minorConcerns),
+    closingAssessment: buildClosingAssessment(input.summary.recommendedReviewPosture),
+  };
+}
+
+function buildExecutiveSummary(summary: ReviewerCopilotSummary): string {
+  const posture = reviewPostureLabel(summary.recommendedReviewPosture);
+
+  if (summary.majorConcernCount > 0) {
+    return `${posture}. The audit found ${summary.majorConcernCount} major concern(s) and ${summary.minorConcernCount} minor concern(s). The review should focus first on whether the main claims are adequately supported, methodologically justified, and traceable to evidence.`;
+  }
+
+  if (summary.minorConcernCount > 0) {
+    return `${posture}. The audit found no major concerns, but ${summary.minorConcernCount} minor concern(s) should be addressed to improve clarity, support, and traceability.`;
+  }
+
+  return `${posture}. The current local audit did not identify major or minor reviewer concerns, so the outline can focus on presentation quality, scope, and final verification.`;
+}
+
+function buildStrengths(claims: Claim[]): string[] {
+  const claimTypes = [...new Set(claims.map((claim) => claim.type))];
+  const strengths = [
+    `The document exposes a reviewable claim structure with ${claims.length} extracted claim(s).`,
+    `The audit can trace extracted claims back to source locations for targeted review.`,
+  ];
+
+  if (claimTypes.includes("methodological")) {
+    strengths.push("The document contains methodological claims that can be connected to assumptions and robustness checks.");
+  }
+
+  if (claimTypes.includes("causal")) {
+    strengths.push("The causal claims are explicit enough to be audited for identification strategy and alternative mechanisms.");
+  }
+
+  if (claimTypes.includes("normative")) {
+    strengths.push("The document makes design or requirement claims that can be checked against user, safety, or workflow evidence.");
+  }
+
+  return strengths.slice(0, 4);
+}
+
+function concernToOutlineSection(concern: ReviewerConcern, index: number): ReviewOutlineSection {
+  return {
+    title: `${index}. ${concern.title}`,
+    concernIds: [concern.id],
+    bullets: [
+      `Claim: ${truncate(concern.claimText, 180)}`,
+      `Location: ${concern.sourceLocation.locator}`,
+      `Why it matters: ${concern.rationale}`,
+      `Reviewer question: ${concern.reviewerQuestion}`,
+      `Suggested action: ${concern.suggestedAction}`,
+    ],
+  };
+}
+
+function buildRequiredRevisions(majorConcerns: ReviewerConcern[], minorConcerns: ReviewerConcern[]): string[] {
+  const revisions: string[] = [];
+
+  if (majorConcerns.some((concern) => concern.claimType === "causal")) {
+    revisions.push("Clarify causal identification, confounding risks, alternative mechanisms, and external-validity boundaries.");
+  }
+
+  if (majorConcerns.some((concern) => concern.claimType === "numerical")) {
+    revisions.push("Trace important numerical claims to source tables, datasets, citations, or reproducible calculations.");
+  }
+
+  if (majorConcerns.some((concern) => concern.claimType === "methodological")) {
+    revisions.push("State method assumptions and add robustness, ablation, or sensitivity checks where needed.");
+  }
+
+  if (majorConcerns.some((concern) => concern.source === "citation-support-warning")) {
+    revisions.push("Replace weak or missing support with direct evidence for high-stakes claims.");
+  }
+
+  if (minorConcerns.length > 0) {
+    revisions.push("Clean up remaining minor traceability and clarity issues after the major concerns are resolved.");
+  }
+
+  if (revisions.length === 0) {
+    revisions.push("Run a final source-location and evidence-support check before accepting the document.");
+  }
+
+  return revisions;
+}
+
+function buildClosingAssessment(posture: ReviewerReviewPosture): string {
+  switch (posture) {
+    case "major-revision":
+      return "The review should not treat the document as ready until the major support and methodology concerns are resolved.";
+    case "focused-revision":
+      return "The review can focus on a small number of blocking concerns before reassessing the document.";
+    case "minor-revision":
+      return "The document appears reviewable with targeted cleanup of minor evidence and clarity issues.";
+    case "light-review":
+      return "The document appears to need only a light final review under the current local audit rules.";
+  }
 }
 
 function concernFromFinding(finding: AuditFinding, claim: Claim | undefined): ReviewerConcern | undefined {
@@ -293,6 +425,24 @@ function titleCase(value: string): string {
     .split("-")
     .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
     .join(" ");
+}
+
+function reviewPostureLabel(posture: ReviewerReviewPosture): string {
+  switch (posture) {
+    case "major-revision":
+      return "Recommend major revision";
+    case "focused-revision":
+      return "Recommend focused revision";
+    case "minor-revision":
+      return "Recommend minor revision";
+    case "light-review":
+      return "Recommend light review";
+  }
+}
+
+function truncate(value: string, maxLength: number): string {
+  const compact = value.replace(/\s+/g, " ").trim();
+  return compact.length > maxLength ? `${compact.slice(0, maxLength - 3)}...` : compact;
 }
 
 function isConcern(value: ReviewerConcern | undefined): value is ReviewerConcern {

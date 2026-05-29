@@ -68,6 +68,7 @@ export function generateAuditReport(input: {
     citationSupportWarnings: input.citationSupportWarnings,
   });
   const reviewerCopilot = buildReviewerCopilot({
+    documentTitle: input.document.title,
     claims: input.claims,
     findings: input.findings,
     citationSupportWarnings: input.citationSupportWarnings,

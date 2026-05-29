@@ -281,6 +281,23 @@ export type ReviewerConcern = {
   tags: string[];
 };
 
+export type ReviewOutlineSection = {
+  title: string;
+  bullets: string[];
+  concernIds: string[];
+};
+
+export type ReviewOutline = {
+  title: string;
+  recommendation: ReviewerReviewPosture;
+  executiveSummary: string;
+  strengths: string[];
+  majorIssues: ReviewOutlineSection[];
+  minorIssues: ReviewOutlineSection[];
+  requiredRevisions: string[];
+  closingAssessment: string;
+};
+
 export type ReviewerCopilot = {
   summary: {
     majorConcernCount: number;
@@ -292,6 +309,7 @@ export type ReviewerCopilot = {
   };
   majorConcerns: ReviewerConcern[];
   minorConcerns: ReviewerConcern[];
+  reviewOutline: ReviewOutline;
 };
 
 export type AuditSession = {
