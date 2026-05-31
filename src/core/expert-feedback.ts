@@ -54,36 +54,37 @@ export function buildExpertFeedback(input: {
 function claimControlsFromConcerns(claims: Claim[], concerns: ReviewerConcern[]): ExpertFeedbackControl[] {
   const claimsById = new Map(claims.map((claim) => [claim.id, claim]));
   const claimIds = [...new Set(concerns.map((concern) => concern.claimId))].slice(0, 6);
+  const controls: ExpertFeedbackControl[] = [];
 
-  return claimIds
-    .map((claimId) => {
-      const claim = claimsById.get(claimId);
+  for (const claimId of claimIds) {
+    const claim = claimsById.get(claimId);
 
-      if (!claim) {
-        return undefined;
-      }
+    if (!claim) {
+      continue;
+    }
 
-      return {
-        id: randomUUID(),
-        targetType: "claim",
-        targetId: claim.id,
-        label: `Validate claim: ${truncate(claim.text, 80)}`,
-        priority: claim.riskLevel ?? "medium",
-        status: "open",
-        rationale: "Major reviewer concerns depend on this claim, so an expert should confirm its wording, type, and source location.",
-        recommendedActions: [
-          action("approve", "Accept claim", "Confirm that the extracted claim is accurate and reviewable."),
-          action("edit-text", "Edit claim", "Revise the extracted claim text or classification."),
-          action("request-evidence", "Request support", "Ask for stronger source support before relying on this claim."),
-        ],
-        sourceLocation: claim.sourceLocation,
-        metadata: {
-          claimType: claim.type,
-          sectionId: claim.sectionId,
-        },
-      } satisfies ExpertFeedbackControl;
-    })
-    .filter(isFeedbackControl);
+    controls.push({
+      id: randomUUID(),
+      targetType: "claim",
+      targetId: claim.id,
+      label: `Validate claim: ${truncate(claim.text, 80)}`,
+      priority: claim.riskLevel ?? "medium",
+      status: "open",
+      rationale: "Major reviewer concerns depend on this claim, so an expert should confirm its wording, type, and source location.",
+      recommendedActions: [
+        action("approve", "Accept claim", "Confirm that the extracted claim is accurate and reviewable."),
+        action("edit-text", "Edit claim", "Revise the extracted claim text or classification."),
+        action("request-evidence", "Request support", "Ask for stronger source support before relying on this claim."),
+      ],
+      sourceLocation: claim.sourceLocation,
+      metadata: {
+        claimType: claim.type,
+        sectionId: claim.sectionId,
+      },
+    });
+  }
+
+  return controls;
 }
 
 function concernControls(concern: ReviewerConcern): ExpertFeedbackControl[] {
@@ -332,8 +333,4 @@ function action(
 function truncate(value: string, maxLength: number): string {
   const compact = value.replace(/\s+/g, " ").trim();
   return compact.length > maxLength ? `${compact.slice(0, maxLength - 3)}...` : compact;
-}
-
-function isFeedbackControl(value: ExpertFeedbackControl | undefined): value is ExpertFeedbackControl {
-  return Boolean(value);
 }
