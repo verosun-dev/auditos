@@ -38,6 +38,7 @@ src/
     code-reproduction.ts
     document-ingestion.ts
     evidence-extractor.ts
+    expert-feedback.ts
     hidden-prompt-detector.ts
     initialize-audit.ts
     pdf-ingestion.ts
@@ -118,6 +119,8 @@ Reports include `reviewerCopilot`, which classifies audit findings and support w
 Reports include `promptInjectionScan`, a first-pass local scan for hidden prompts, instruction overrides, tool-command injection, jailbreak language, and other prompt-injection patterns.
 
 Reports include `codeReproductionPlan`, a first-pass STEM reproducibility plan that extracts repository, command, environment, dataset, target-result, hardware, seed, dependency, and access-boundary signals. The visualization bundle includes `code-reproduction-map` for inspecting the reproduction workflow.
+
+Reports include `expertFeedback`, which turns major concerns, review outline decisions, prompt-injection warnings, graph selection, and STEM code reproduction steps into actionable expert controls.
 
 AuditOS also recommends an adaptive visualization mode in `metadata.visualization`:
 

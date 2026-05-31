@@ -12,6 +12,7 @@ import type {
   PromptInjectionScan,
 } from "../types/audit.ts";
 import { buildClaimGraph, buildClaimMindmap, renderMindmapMermaid } from "./claim-graph.ts";
+import { buildExpertFeedback } from "./expert-feedback.ts";
 import { buildReviewerCopilot } from "./reviewer-copilot.ts";
 import { buildRiskHeatmap } from "./risk-heatmap.ts";
 import { recommendVisualization } from "./visualization-adapter.ts";
@@ -78,6 +79,13 @@ export function generateAuditReport(input: {
     findings: input.findings,
     citationSupportWarnings: input.citationSupportWarnings,
   });
+  const expertFeedback = buildExpertFeedback({
+    claims: input.claims,
+    promptInjectionScan: input.promptInjectionScan,
+    codeReproductionPlan: input.codeReproductionPlan,
+    reviewerCopilot,
+    visualization,
+  });
 
   return {
     session: {
@@ -92,6 +100,7 @@ export function generateAuditReport(input: {
         codeReproductionPlan: input.codeReproductionPlan,
         assumptions: input.assumptions,
         findings: input.findings,
+        expertFeedback,
         reviewerQuestions,
       },
     },
@@ -117,6 +126,7 @@ export function generateAuditReport(input: {
     visualizationDiagrams,
     primaryVisualizationMermaid,
     reviewerCopilot,
+    expertFeedback,
     reviewerQuestions,
     reproducibilityChecklist: [
       "Are all datasets named and accessible?",

@@ -96,10 +96,12 @@ Current implementation:
 - Reports include `reviewerCopilot.reviewOutline`, a draft review structure with summary, strengths, major issues, minor issues, required revisions, and closing assessment.
 - `hidden-prompt-detector.ts` scans document sections for first-pass prompt-injection and hidden-instruction patterns.
 - Reports include `promptInjectionScan.summary` and `promptInjectionScan.warnings`.
+- `expert-feedback.ts` generates expert review controls for concerns, review outline, prompt-injection warnings, visualization choice, and code reproduction steps.
+- Reports include `expertFeedback.summary` and `expertFeedback.controls`.
 
 Remaining Phase 2 work:
 
-- Add expert feedback controls.
+- Phase 2 MVP is complete. Next work can begin on the Web App and Interface Track or Phase 3 testing and simulation.
 
 ## Web App and Interface Track
 
@@ -117,6 +119,7 @@ Core screens:
 - Code reproduction panel for STEM papers with repository, environment, data, command, and output-comparison steps.
 - Risk heatmap dashboard.
 - Reviewer Copilot panel with major/minor concerns and draft review outline.
+- Expert feedback controls for approving, dismissing, editing, requesting evidence, selecting graph views, and approving sandboxed reproduction steps.
 - Export panel for JSON, Mermaid, and review outline artifacts.
 
 Implementation steps:
@@ -129,6 +132,7 @@ Implementation steps:
 - Render `codeReproductionPlan` and the `code-reproduction-map` for STEM reproduction workflows.
 - Render `riskHeatmap` as dashboard tiles and grouped tables.
 - Render `reviewerCopilot` as a reviewer workspace.
+- Render `expertFeedback.controls` as actionable expert review controls.
 - Add loading, empty, error, and rerun states.
 - Add local sample fixtures so the UI can be tested without repeatedly processing the PDF.
 
@@ -194,6 +198,7 @@ Covered in code:
 - Reviewer Copilot concern classification.
 - Draft review outline.
 - First-pass hidden prompt and prompt-injection detection.
+- Expert feedback controls for reviewer decisions and UI workflows.
 
 Partially covered:
 

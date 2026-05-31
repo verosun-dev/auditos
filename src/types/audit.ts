@@ -392,6 +392,56 @@ export type ReviewerCopilot = {
   reviewOutline: ReviewOutline;
 };
 
+export type ExpertFeedbackTargetType =
+  | "claim"
+  | "reviewer-concern"
+  | "review-outline"
+  | "prompt-injection-warning"
+  | "code-reproduction-step"
+  | "visualization";
+
+export type ExpertFeedbackActionType =
+  | "approve"
+  | "dismiss"
+  | "request-evidence"
+  | "adjust-severity"
+  | "edit-text"
+  | "mark-reviewed"
+  | "quarantine"
+  | "sandbox-run"
+  | "select-visualization";
+
+export type ExpertFeedbackControlStatus = "open" | "accepted" | "dismissed" | "needs-revision" | "resolved";
+
+export type ExpertFeedbackAction = {
+  actionType: ExpertFeedbackActionType;
+  label: string;
+  description: string;
+};
+
+export type ExpertFeedbackControl = {
+  id: string;
+  targetType: ExpertFeedbackTargetType;
+  targetId: string;
+  label: string;
+  priority: RiskLevel;
+  status: ExpertFeedbackControlStatus;
+  rationale: string;
+  recommendedActions: ExpertFeedbackAction[];
+  sourceLocation?: SourceLocation;
+  metadata?: Record<string, unknown>;
+};
+
+export type ExpertFeedback = {
+  summary: {
+    openControlCount: number;
+    highPriorityCount: number;
+    requiredExpertDecisionCount: number;
+    rationale: string[];
+  };
+  controls: ExpertFeedbackControl[];
+};
+
 export type AuditSession = {
   sessionId: string;
   createdAt: string;
@@ -407,6 +457,7 @@ export type AuditSession = {
     codeReproductionPlan: CodeReproductionPlan;
     assumptions: Assumption[];
     findings: AuditFinding[];
+    expertFeedback: ExpertFeedback;
     reviewerQuestions: string[];
   };
 };
@@ -435,6 +486,7 @@ export type AuditReport = {
   visualizationDiagrams: VisualizationDiagram[];
   primaryVisualizationMermaid: string;
   reviewerCopilot: ReviewerCopilot;
+  expertFeedback: ExpertFeedback;
   reviewerQuestions: string[];
   reproducibilityChecklist: string[];
 };
