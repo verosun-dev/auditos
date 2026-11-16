@@ -139,7 +139,8 @@ Implementation steps:
 Status:
 
 - Backend report fields needed by the first UI are now present.
-- The frontend app has not started yet.
+- A first local web app exists in `web/` with upload, audit run, claims, reviewer, visualization, risk, code reproduction, and expert controls views.
+- `src/server.ts` provides a local API boundary around `runInitialAudit`.
 
 ## Phase 3: Testing and Simulation
 

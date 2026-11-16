@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node src/index.ts",
-    "audit:sample": "node src/index.ts examples/sample-paper.txt"
+    "audit:sample": "node src/index.ts examples/sample-paper.txt",
+    "web": "node src/server.ts"
   },
   "dependencies": {},
   "devDependencies": {}

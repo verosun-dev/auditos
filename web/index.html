@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AuditOS</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AuditOS Research Reviewer</p>
+          <h1>Paper Audit Workspace</h1>
+        </div>
+        <div class="status-pill" id="appStatus">Ready</div>
+      </header>
+
+      <section class="workspace-grid">
+        <form class="upload-panel" id="auditForm">
+          <label class="field-label" for="paperFile">Document</label>
+          <input id="paperFile" name="paperFile" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" />
+
+          <div class="form-row">
+            <label>
+              <span class="field-label">Extractor</span>
+              <select id="extractorMode">
+                <option value="auto">auto</option>
+                <option value="heuristic">heuristic</option>
+                <option value="llm">llm</option>
+              </select>
+            </label>
+            <label>
+              <span class="field-label">Max sections</span>
+              <input id="maxSections" type="number" min="1" max="80" placeholder="optional" />
+            </label>
+          </div>
+
+          <button class="primary-button" type="submit">
+            <span class="button-icon" aria-hidden="true">Run</span>
+            Audit Paper
+          </button>
+        </form>
+
+        <section class="summary-panel" aria-live="polite">
+          <h2>Audit Summary</h2>
+          <div class="metric-grid" id="metricGrid">
+            <div class="metric"><span>Sections</span><strong>0</strong></div>
+            <div class="metric"><span>Claims</span><strong>0</strong></div>
+            <div class="metric"><span>Major</span><strong>0</strong></div>
+            <div class="metric"><span>Controls</span><strong>0</strong></div>
+          </div>
+          <p class="summary-text" id="summaryText">Upload a PDF or text file to start a local audit.</p>
+        </section>
+      </section>
+
+      <nav class="tabs" aria-label="Audit views">
+        <button class="tab is-active" data-view="claims" type="button">Claims</button>
+        <button class="tab" data-view="reviewer" type="button">Reviewer</button>
+        <button class="tab" data-view="visuals" type="button">Visuals</button>
+        <button class="tab" data-view="risk" type="button">Risk</button>
+        <button class="tab" data-view="repro" type="button">Reproduction</button>
+        <button class="tab" data-view="controls" type="button">Controls</button>
+      </nav>
+
+      <section class="view is-active" id="claimsView">
+        <div class="section-heading">
+          <h2>Claims</h2>
+          <span id="claimCount">0</span>
+        </div>
+        <div class="list" id="claimsList"></div>
+      </section>
+
+      <section class="view" id="reviewerView">
+        <div class="section-heading">
+          <h2>Reviewer Copilot</h2>
+          <span id="reviewPosture">pending</span>
+        </div>
+        <div class="split-layout">
+          <div>
+            <h3>Major Concerns</h3>
+            <div class="list compact" id="majorConcernsList"></div>
+          </div>
+          <div>
+            <h3>Review Outline</h3>
+            <div class="outline" id="reviewOutline"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="visualsView">
+        <div class="section-heading">
+          <h2>Visualizations</h2>
+          <select id="visualizationSelect"></select>
+        </div>
+        <pre class="mermaid-output" id="visualizationOutput"></pre>
+      </section>
+
+      <section class="view" id="riskView">
+        <div class="section-heading">
+          <h2>Risk Heatmap</h2>
+          <span id="documentRisk">pending</span>
+        </div>
+        <div class="list compact" id="riskList"></div>
+      </section>
+
+      <section class="view" id="reproView">
+        <div class="section-heading">
+          <h2>Code Reproduction</h2>
+          <span id="reproReadiness">pending</span>
+        </div>
+        <div class="list compact" id="reproSteps"></div>
+      </section>
+
+      <section class="view" id="controlsView">
+        <div class="section-heading">
+          <h2>Expert Controls</h2>
+          <span id="controlCount">0</span>
+        </div>
+        <div class="list compact" id="controlsList"></div>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

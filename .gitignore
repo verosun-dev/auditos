@@ -5,3 +5,4 @@ dist/
 coverage/
 *.log
 reports/
+.auditos/

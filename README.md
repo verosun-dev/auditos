@@ -49,8 +49,13 @@ src/
     section-parser.ts
     visualization-adapter.ts
     visualization-renderer.ts
+  server.ts
   types/
     audit.ts
+web/
+  index.html
+  styles.css
+  app.js
 ```
 
 ## First Development Path
@@ -66,6 +71,14 @@ src/
 The current codebase is the local audit-engine foundation, not the full AuditOS product. The implementation plan now separates backend audit phases from the web app/interface track. The next productization step is a frontend that lets users upload a paper, run an audit, inspect claims and source locations, switch between graph views, review the risk heatmap, and use Reviewer Copilot output.
 
 ## Run Locally
+
+Run the local web app:
+
+```bash
+npm run web
+```
+
+Then open `http://localhost:5173`.
 
 Run the sample text audit:
 
